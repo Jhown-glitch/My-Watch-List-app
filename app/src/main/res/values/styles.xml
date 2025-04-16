@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MyWatchList"
-        parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary" type="">@color/colorPrimary</item>
-        <item name="colorPrimaryDark" type="">@color/colorPrimaryDark</item>
-        <item name="colorAccent" type="">@color/colorAccent</item>
+    <style>
+        <item name="colorPrimary" type="@color/roxo"></item>
+        <item name="colorPrimaryDark" type="@color/roxoEscuro"></item>
+        <item name="colorAccent" type="@color/roxoClaro"></item>
     </style>
 
 </resources>
