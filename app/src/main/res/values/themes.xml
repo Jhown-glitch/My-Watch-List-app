@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MyWatchList"
-        parent="Theme.AppCompat.Light.NoActionBar" />
+    <style name="Theme.MyWatchList" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/roxoClaro</item>
+        <item name="colorPrimaryDark">@color/roxo</item>
+        <item name="colorAccent">@color/verde</item>
+        <item name="android:statusBarColor">@color/roxoClaro</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
 </resources>
