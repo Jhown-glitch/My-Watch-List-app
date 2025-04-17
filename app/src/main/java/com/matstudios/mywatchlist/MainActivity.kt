@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.matstudios.mywatchlist.ui.theme.MyWatchListTheme
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         val container = findViewById<LinearLayout>(R.id.linearLayout)
 
-        val db = Firebase.firestore.getInstance()
+        val db = FirebaseFirestore.getInstance()
         db.collection("minhaLista").get().addOnSuccessListener { result ->
             for (document in result) {
                 val anime = document.toObject(Anime::class.java)
@@ -63,4 +65,13 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
     }
+}
+
+class FirebaseFirestore {
+    companion object {
+        fun getInstance(): Any {
+
+        }
+    }
+
 }

@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.firebase.firestore)
     implementation(libs.glide)
     kapt(libs.glide.compiler)
     testImplementation(libs.junit)
