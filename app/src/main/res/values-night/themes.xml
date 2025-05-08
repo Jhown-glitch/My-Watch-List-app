@@ -3,5 +3,39 @@
     <style name="Base.Theme.MyWatchList" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!--
+            <item name="colorPrimary">#BB7300CB</item>
+            <item name="colorPrimaryVariant">#FF7300CB</item>
+            <item name="colorSecondary">#FF993AFF</item>
+            <item name="colorAccent">#FF7300CB</item>
+            <item name="android:textColorPrimary">#FF14C111</item>
+            <item name="android:colorControlNormal">#FF14C111</item>
+            <item name="android:windowBackground">#FF121212</item>
+        -->
+
+        <!-- Cores principais no modo escuro -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- Fundo, superfície e texto -->
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnPrimary">@color/onPrimary</item>
+        <item name="colorOnBackground">@color/onBackground</item>
+        <item name="colorOnSurface">@color/onSurface</item>
+
+        <!-- Controles -->
+        <item name="colorControlHighlight">@color/colorControlHighlight</item>
+        <item name="colorControlNormal">@color/colorControlNormal</item>
+
+        <!-- Ícones, texto etc -->
+        <item name="android:textColor">@color/onBackground</item>
+        <item name="android:windowBackground">@color/background</item>
+
+        <!-- Para debug visual -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryDark</item>
+
     </style>
+    <style name="Theme.MyWatchList" parent="Base.Theme.MyWatchList" />
 </resources>

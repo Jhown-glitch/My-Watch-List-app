@@ -3,8 +3,41 @@
     <style name="Base.Theme.MyWatchList" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!--
+            <!- Cor Primária ->
+            <item name="colorPrimary">#FF7300CB</item>
+            <item name="colorPrimaryVariant">#BB7300CB</item>
+            <!- Acento e Destaque ->
+            <item name="colorSecondary">#FF993AFF</item>
+            <item name="colorAccent">#FF7300CB</item>
+            <!- Texto e ícones padrão ->
+            <item name="android:textColorPrimary">#000</item>
+            <item name="android:textColorSecondary">#FF14C111</item>
+            <item name="android:colorControlNormal">#FF14C111</item>
+            <!- Background e Superfície (opcional) ->
+            <item name="android:windowBackground">#FFFFFFFF</item>
+        -->
+
+        <!-- Cores principais -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+
+        <!-- Cor secundária -->
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_on_secondary</item>
+
+        <!-- Fundo e superfície -->
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+
+        <!-- Configurações gerais -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
+
     </style>
 
     <style name="Theme.MyWatchList" parent="Base.Theme.MyWatchList" />
-
 </resources>

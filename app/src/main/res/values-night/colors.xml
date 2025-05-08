@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cores principais escuras -->
+    <color name="colorPrimary">#BB7300CB</color>
+    <color name="colorPrimaryDark">#990057A3</color>
+    <color name="colorAccent">#FF7300CB</color>
+
+    <!-- Realces e controles -->
+    <color name="colorControlHighlight">#FF993AFF</color>
+    <color name="colorControlNormal">#FF14C111</color>
+
+    <!-- Fundo e texto -->
+    <color name="background">#121212</color>
+    <color name="surface">#1E1E1E</color>
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onBackground">#E0E0E0</color>
+    <color name="onSurface">#CCCCCC</color>
+</resources>
