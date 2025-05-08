@@ -25,6 +25,10 @@
         <item name="colorOnBackground">@color/onBackground</item>
         <item name="colorOnSurface">@color/onSurface</item>
 
+        <!-- Texto e ícone padrão -->
+        <item name="android:textColorPrimary">@color/onBackground</item>
+        <item name="android:textColorSecondary">@color/onSurface</item>
+
         <!-- Controles -->
         <item name="colorControlHighlight">@color/colorControlHighlight</item>
         <item name="colorControlNormal">@color/colorControlNormal</item>

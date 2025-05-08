@@ -28,6 +28,10 @@
         <item name="colorSecondary">@color/md_theme_light_secondary</item>
         <item name="colorOnSecondary">@color/md_theme_light_on_secondary</item>
 
+        <!-- Texto e ícone padrão -->
+        <item name="android:textColorPrimary">@color/md_theme_light_onBackground</item>
+        <item name="android:textColorSecondary">@color/md_theme_light_onSurface</item>
+
         <!-- Fundo e superfície -->
         <item name="android:colorBackground">@color/md_theme_light_background</item>
         <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
