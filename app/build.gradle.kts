@@ -1,10 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    //id("com.android.application")
-    // Add the Google services Gradle plugin
-    id("com.google.gms.google-services")
-
 }
 
 android {
@@ -46,21 +42,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.cardview)
-    implementation(libs.androidx.swiperefreshlayout)
-    // Import the Firebase BoM
-    implementation(platform(libs.firebase.bom))
-    // When using the BoM, don't specify versions in Firebase dependencies
-    //Cloud Firestore
-    implementation(libs.firebase.firestore)
-    //Cloud Storage
-    implementation(libs.firebase.storage)
-    //Firebase Analytics
-    implementation(libs.firebase.analytics)
-    // Add the dependencies for any other desired Firebase products
-    // https://firebase.google.com/docs/android/setup#available-libraries
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
