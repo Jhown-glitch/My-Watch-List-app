@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.matstudios.mywatchlist" />
+                  <option name="mobileSdkAppId" value="1:1086405243249:android:13201feafdc2fa555006d0" />
+                  <option name="projectId" value="my-watch-list-8cec3" />
+                  <option name="projectNumber" value="1086405243249" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
