@@ -1,15 +1,66 @@
+# =========================
+# Android Studio / IntelliJ
+# =========================
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.idea/
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# =========================
+# Build / Output / Cache
+# =========================
+.gradle/
+build/
+*/build/
+.cxx/
+.externalNativeBuild/
+.kotlinc/
+.ksp/
+out/
+captures/
+.cinterop/
+
+# =========================
+# Configuração local
+# =========================
 local.properties
+/local.properties
+
+# =========================
+# Arquivos do sistema / SO
+# =========================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# =========================
+# Chaves e Segurança
+# =========================
+*.jks
+*.keystore
+*.pem
+*.p12
+key.properties
+
+# =========================
+# Firebase / Google Services
+# =========================
+firebase.json
+google-services.json
+fabric.properties
+
+# =========================
+# Arquivos de log / Debug
+# =========================
+*.log
+*.hprof
+
+# =========================
+# Arquivos temporários do editor
+# =========================
+*.swp
+*~
