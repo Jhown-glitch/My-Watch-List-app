@@ -50,7 +50,7 @@ key.properties
 # Firebase / Google Services
 # =========================
 firebase.json
-google-services.json
+**/google-services.json
 fabric.properties
 
 # =========================
