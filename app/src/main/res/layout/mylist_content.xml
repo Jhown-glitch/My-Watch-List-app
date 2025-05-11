@@ -18,6 +18,7 @@
             android:layout_margin="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="Capa do conteúdo"
             android:src="@mipmap/imagem_teste"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -101,6 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="Avaliação: "
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/capa" />
 
         <TextView
