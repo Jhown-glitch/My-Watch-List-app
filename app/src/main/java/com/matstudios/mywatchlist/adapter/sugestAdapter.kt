@@ -28,8 +28,6 @@ class SugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<S
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int = animeList.size
-
     //Vincula os dados aos componentes do layout
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = animeList[position]
@@ -45,4 +43,6 @@ class SugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<S
         holder.genero.text = item.genero
         holder.avaliacao.text = item.avaliacao
     }
+
+    override fun getItemCount(): Int = animeList.size
 }
