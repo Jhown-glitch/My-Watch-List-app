@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.matstudios.mywatchlist.R
 import com.bumptech.glide.Glide
 
-class mylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<mylistAdapter.ViewHolder>(){
+class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<MylistAdapter.ViewHolder>(){
 
     //Classe interna para representar cada item da lista
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {

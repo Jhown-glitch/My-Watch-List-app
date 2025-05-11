@@ -7,8 +7,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.matstudios.mywatchlist.adapter.MylistAdapter
+import com.matstudios.mywatchlist.adapter.SugestAdapter
 import com.matstudios.mywatchlist.adapter.anime
-import com.matstudios.mywatchlist.adapter.sugestAdapter
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +23,8 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
+        // Configuração do RecyclerView
+        setContentView(R.layout.activity_main)
         val recyclerViewSugest = findViewById<RecyclerView>(R.id.sugestSection)
         val recyclerViewMylist = findViewById<RecyclerView>(R.id.mylistSection)
 
@@ -37,10 +39,13 @@ class MainActivity : AppCompatActivity() {
                 status = "Planejando"
             )
         )
+        //RecyclerView Sugestão
         recyclerViewSugest.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerViewSugest.adapter = SugestAdapter(animeList)
+
+        //RecyclerView Minha Lista
         recyclerViewMylist.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerViewSugest.adapter = sugestAdapter(animeList)
-        recyclerViewMylist.adapter = sugestAdapter(animeList)
+        recyclerViewMylist.adapter = MylistAdapter(animeList)
 
 
     }

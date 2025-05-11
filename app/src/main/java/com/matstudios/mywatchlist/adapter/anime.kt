@@ -7,5 +7,5 @@ data class anime(
     val sinopse: String = "",
     val genero: String = "",
     val avaliacao: String = "",
-    val status: String = "",
+    val status: String = ""
 )

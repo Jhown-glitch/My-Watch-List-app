@@ -1,5 +1,6 @@
 package com.matstudios.mywatchlist.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.matstudios.mywatchlist.R
 
-class sugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<sugestAdapter.ViewHolder>(){
+class SugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<SugestAdapter.ViewHolder>(){
 
     //Classe interna para representar cada item da lista
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -32,6 +33,8 @@ class sugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<s
     //Vincula os dados aos componentes do layout
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = animeList[position]
+
+        Log.d("SugestAdapter", "Essa merda funcionou: ${item.titulo}")
 
         Glide.with(holder.itemView.context)
             .load(item.capaUrl)
