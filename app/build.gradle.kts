@@ -4,6 +4,8 @@ plugins {
     //id("com.android.application")
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
+    //ksp
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -48,6 +50,9 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.swiperefreshlayout)
+    //Glide
+    implementation(libs.glide)
+    ksp(libs.glide.compiler)
     // Import the Firebase BoM
     implementation(platform(libs.firebase.bom))
     // When using the BoM, don't specify versions in Firebase dependencies
