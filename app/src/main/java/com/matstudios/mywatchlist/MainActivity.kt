@@ -7,6 +7,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 import com.matstudios.mywatchlist.adapter.MylistAdapter
 import com.matstudios.mywatchlist.adapter.SugestAdapter
 import com.matstudios.mywatchlist.adapter.anime
@@ -26,6 +27,11 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        carregarSugestoes()
+        carregarMinhaLista()
+
+
 
 
         // Configuração do RecyclerView
@@ -52,5 +58,62 @@ class MainActivity : AppCompatActivity() {
         recyclerViewMylist.adapter = MylistAdapter(animeList)
 
 
+    }
+
+    //Carregando dados para a sessão Recomendados
+    private fun carregarSugestoes() {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("recomendados")
+            .get()
+            .addOnSuccessListener { result ->
+                val animeList = mutableListOf<anime>()
+                for (document in result) {
+                    val item = anime (
+                        capaUrl = document.getString("capaUrl") ?: "",
+                        titulo = document.getString("titulo") ?: "",
+                        episodios = document.getString("episodios") ?: "",
+                        sinopse = document.getString("sinopse") ?: "",
+                        genero = document.getString("genero") ?: "",
+                        avaliacao = document.getString("avaliacao") ?: "",
+                        status = ""
+
+                    )
+                    animeList.add(item)
+                }
+                binding.sugestSection.adapter = SugestAdapter(animeList)
+            }
+            .addOnFailureListener { exception ->
+                // Trate erros aqui
+                println("Erro ao carregar dados: $exception")
+            }
+    }
+
+    //Carregando dados para a sessão Minha Lista
+    private fun carregarMinhaLista() {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("minhaLista")
+            .get()
+            .addOnSuccessListener { result ->
+                val animeList = mutableListOf<anime>()
+                for (document in result) {
+                    val item = anime (
+                        capaUrl = document.getString("capaUrl") ?: "",
+                        titulo = document.getString("titulo") ?: "",
+                        episodios = document.getString("episodios") ?: "",
+                        sinopse = document.getString("sinopse") ?: "",
+                        genero = document.getString("genero") ?: "",
+                        avaliacao = document.getString("avaliacao") ?: "",
+                        status = document.getString("status") ?: ""
+                    )
+                    animeList.add(item)
+                }
+                binding.mylistSection.adapter = MylistAdapter(animeList)
+            }
+            .addOnFailureListener { exception ->
+                // Trate erros aqui
+                println("Erro ao carregar dados: $exception")
+            }
     }
 }

@@ -2,15 +2,15 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
         android:padding="8dp">
 
         <ImageView
@@ -37,6 +37,8 @@
             android:id="@+id/titulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="170dp"
+            android:maxLines="2"
             android:text="Exemplo Título"
             app:layout_constraintStart_toEndOf="@+id/textView2"
             app:layout_constraintTop_toTopOf="@+id/textView2" />
@@ -69,11 +71,10 @@
 
         <TextView
             android:id="@+id/sinopse"
-            android:layout_width="wrap_content"
+            android:layout_width="175dp"
             android:layout_height="wrap_content"
-            android:maxWidth="130dp"
-            android:maxHeight="70dp"
-            android:maxLength="73"
+            android:maxLines="4"
+            android:ellipsize="end"
             android:text="Exemplo Sinopse"
             android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@+id/textView5"
@@ -90,9 +91,11 @@
 
         <TextView
             android:id="@+id/genero"
-            android:layout_width="wrap_content"
+            android:layout_width="175dp"
             android:layout_height="wrap_content"
-            android:text="Exemplo Gênero"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:text="Ação, Aventura"
             app:layout_constraintStart_toEndOf="@+id/textView7"
             app:layout_constraintTop_toTopOf="@+id/textView7" />
 
@@ -112,27 +115,6 @@
             android:text="0.0"
             app:layout_constraintStart_toEndOf="@+id/textView6"
             app:layout_constraintTop_toTopOf="@+id/textView6" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_end="24dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="24dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="113dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
