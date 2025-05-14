@@ -15,12 +15,12 @@
 
         <ImageView
             android:id="@+id/capa"
-            android:layout_margin="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="Capa do conteúdo"
+            android:layout_width="100dp"
+            android:layout_height="141dp"
+            android:layout_marginBottom="5dp"
+            android:scaleType="centerCrop"
             android:src="@mipmap/imagem_teste"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/textView6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -29,13 +29,12 @@ class MainActivity : AppCompatActivity() {
 
 
         // Configuração do RecyclerView
-        setContentView(R.layout.activity_main)
         val recyclerViewSugest = findViewById<RecyclerView>(R.id.sugestSection)
         val recyclerViewMylist = findViewById<RecyclerView>(R.id.mylistSection)
 
         val animeList = listOf(
             anime(
-                capaUrl = "https://www.google.com",
+                capaUrl = "https://upload.wikimedia.org/wikipedia/pt/c/c9/Shingeki_no_Kyojin_4%C2%AA_temporada.jpg",
                 titulo = "Exemplo Título",
                 episodios = "00",
                 sinopse = "Exemplo Sinopse",

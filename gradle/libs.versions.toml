@@ -3,7 +3,7 @@ agp = "8.10.0"
 firebaseBom = "33.13.0"
 kotlin = "2.0.21"
 #ksp
-ksp = "2.0.21-1.0.28"
+#ksp = "2.0.21-1.0.27"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -43,4 +43,4 @@ glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", versi
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
+#ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
