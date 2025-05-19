@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
         carregarSugestoes()
         carregarMinhaLista()
 
-
+        val nomeUsuario: String? = null
+        val mensagemBoasVindas = "Olá, ${nomeUsuario ?: "visitante"}!"
+        binding.HelloU.text = mensagemBoasVindas
 
 
         // Configuração do RecyclerView

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="5dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/capa"
+            android:layout_width="120.57dp"
+            android:layout_height="170dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@mipmap/imagem_teste" />
+
+        <TextView
+            android:id="@+id/tituloLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Título: "
+            app:layout_constraintStart_toEndOf="@+id/capa"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/titulo"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Titulo aqui"
+            app:layout_constraintStart_toEndOf="@id/tituloLabel"
+            app:layout_constraintTop_toTopOf="@id/tituloLabel" />
+
+        <TextView
+            android:id="@+id/episodiosLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Episódios:"
+            app:layout_constraintStart_toEndOf="@+id/capa"
+            app:layout_constraintTop_toBottomOf="@+id/tituloLabel" />
+
+        <TextView
+            android:id="@+id/episodios"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00"
+            app:layout_constraintStart_toEndOf="@+id/episodiosLabel"
+            app:layout_constraintTop_toTopOf="@+id/episodiosLabel" />
+
+        <TextView
+            android:id="@+id/duracaoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Duração: "
+            app:layout_constraintStart_toEndOf="@+id/capa"
+            app:layout_constraintTop_toBottomOf="@+id/episodiosLabel" />
+
+        <TextView
+            android:id="@+id/duracao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            app:layout_constraintStart_toEndOf="@+id/duracaoLabel"
+            app:layout_constraintTop_toTopOf="@+id/duracaoLabel" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

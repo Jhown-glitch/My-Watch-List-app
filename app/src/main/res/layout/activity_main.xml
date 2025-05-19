@@ -61,23 +61,59 @@
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/HelloU"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="15dp"
-        android:text="Recomendados"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:text="Olá"
+        android:textSize="24sp"
+        android:textStyle="bold|italic"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <TextView
+        android:id="@+id/labelAddRecente"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Adicionados Recentemente"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/HelloU" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recentes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/labelAddRecente"
+        tools:itemCount="10"
+        tools:listitem="@layout/new_content" />
+
+    <TextView
+        android:id="@+id/labelRecomendados"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Recomendados"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recentes" />
+
+    <TextView
+        android:id="@+id/verTudoRecomendados"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
         android:text="Ver Tudo"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toTopOf="@+id/labelRecomendados" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sugestSection"
@@ -90,10 +126,10 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/labelRecomendados" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/labelMinhaLista"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -101,14 +137,16 @@
         android:text="Minha Lista"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sugestSection" />
+
     <TextView
+        android:id="@+id/verTudoML"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/sugestSection"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="5dp"
-        android:text="Ver Tudo" />
+        android:text="Ver Tudo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sugestSection" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mylistSection"
@@ -119,7 +157,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/labelMinhaLista"
         tools:itemCount="10"
         tools:listitem="@layout/mylist_content" />
 </androidx.constraintlayout.widget.ConstraintLayout>
