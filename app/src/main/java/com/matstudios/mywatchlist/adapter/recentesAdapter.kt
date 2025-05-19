@@ -6,32 +6,27 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.matstudios.mywatchlist.R
 import com.bumptech.glide.Glide
+import com.matstudios.mywatchlist.R
 
-class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<MylistAdapter.ViewHolder>(){
+class recentesAdapter(private val animeList: List<anime>) : RecyclerView.Adapter<recentesAdapter.ViewHolder>() {
 
-    //Classe interna para representar cada item da lista
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val capa: ImageView = view.findViewById(R.id.capa)
         val titulo: TextView = view.findViewById(R.id.titulo)
-        val episodiosLabel: TextView = view.findViewById(R.id.episodiosLabel)
         val episodios: TextView = view.findViewById(R.id.episodios)
-        val duracaoLabel: TextView = view.findViewById(R.id.duracaoLabel)
         val duracao: TextView = view.findViewById(R.id.duracao)
-        val sinopse: TextView = view.findViewById(R.id.sinopse)
-        val genero: TextView = view.findViewById(R.id.genero)
-        val avaliacao: TextView = view.findViewById(R.id.avaliacao)
-        val status: TextView = view.findViewById(R.id.status)
+        val episodiosLabel: TextView = view.findViewById(R.id.episodiosLabel)
+        val duracaoLabel: TextView = view.findViewById(R.id.duracaoLabel)
     }
 
-    //Infla o layout
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.mylist_content, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.new_content, parent, false)
         return ViewHolder(view)
     }
 
-    //Vincula os dados aos componentes do layout
+    override fun getItemCount(): Int = animeList.size
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = animeList[position]
 
@@ -39,27 +34,28 @@ class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<M
             .load(item.capaUrl)
             .into(holder.capa)
         holder.titulo.text = item.titulo
-        holder.sinopse.text = item.sinopse
-        holder.genero.text = item.genero
-        holder.avaliacao.text = item.avaliacao
-        holder.status.text = item.status
 
-        //Carrega Episódios ou Duração
+        //Mostrar episódios ou duração, não os dois ao mesmo tempo
         if (!item.episodios.isNullOrEmpty()) {
             holder.episodiosLabel.visibility = View.VISIBLE
             holder.episodios.visibility = View.VISIBLE
             holder.duracaoLabel.visibility = View.GONE
             holder.duracao.visibility = View.GONE
             holder.episodios.text = item.episodios
-        } else {
+        } else if (!item.duracao.isNullOrEmpty()) {
             holder.episodiosLabel.visibility = View.GONE
             holder.episodios.visibility = View.GONE
             holder.duracaoLabel.visibility = View.VISIBLE
             holder.duracao.visibility = View.VISIBLE
             holder.duracao.text = item.duracao
+        } else {
+            // Se nenhum dos campos estiver preenchido, ocultar os campos
+            holder.episodiosLabel.visibility = View.GONE
+            holder.episodios.visibility = View.GONE
+            holder.duracaoLabel.visibility = View.GONE
+            holder.duracao.visibility = View.GONE
         }
     }
 
-    override fun getItemCount(): Int = animeList.size
 
 }

@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.matstudios.mywatchlist.adapter.MylistAdapter
 import com.matstudios.mywatchlist.adapter.SugestAdapter
 import com.matstudios.mywatchlist.adapter.anime
+import com.matstudios.mywatchlist.adapter.recentesAdapter
 import com.matstudios.mywatchlist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        carregarRecentes()
         carregarSugestoes()
         carregarMinhaLista()
 
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         // Configuração do RecyclerView
         val recyclerViewSugest = findViewById<RecyclerView>(R.id.sugestSection)
         val recyclerViewMylist = findViewById<RecyclerView>(R.id.mylistSection)
+        val recyclerViewRecentes = findViewById<RecyclerView>(R.id.recentes)
 
         val animeList = listOf(
             anime(
@@ -51,6 +54,11 @@ class MainActivity : AppCompatActivity() {
                 status = "Planejando"
             )
         )
+
+        //RecyclerView Recentes
+        recyclerViewRecentes.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerViewRecentes.adapter = recentesAdapter(animeList)
+
         //RecyclerView Sugestão
         recyclerViewSugest.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerViewSugest.adapter = SugestAdapter(animeList)
@@ -60,6 +68,31 @@ class MainActivity : AppCompatActivity() {
         recyclerViewMylist.adapter = MylistAdapter(animeList)
 
 
+    }
+
+    //Carregando dados para a sessão Recentes
+    private fun carregarRecentes() {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("recentes")
+            .get()
+            .addOnSuccessListener { result ->
+                val animeList = mutableListOf<anime>()
+                for (document in result) {
+                    val item = anime (
+                        capaUrl = document.getString("capaUrl") ?: "",
+                        titulo = document.getString("titulo") ?: "",
+                        episodios = document.getString("episodios") ?: "",
+                        duracao = document.getString("duracao") ?: ""
+                    )
+                    animeList.add(item)
+                }
+                binding.recentes.adapter = recentesAdapter(animeList)
+            }
+            .addOnFailureListener { exception ->
+                // Trate erros aqui
+                println("Erro ao carregar Recentes: $exception")
+            }
     }
 
     //Carregando dados para a sessão Recomendados
@@ -75,6 +108,7 @@ class MainActivity : AppCompatActivity() {
                         capaUrl = document.getString("capaUrl") ?: "",
                         titulo = document.getString("titulo") ?: "",
                         episodios = document.getString("episodios") ?: "",
+                        duracao = document.getString("duracao") ?: "",
                         sinopse = document.getString("sinopse") ?: "",
                         genero = document.getString("genero") ?: "",
                         avaliacao = document.getString("avaliacao") ?: "",
@@ -87,7 +121,7 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 // Trate erros aqui
-                println("Erro ao carregar dados: $exception")
+                println("Erro ao carregar Sugestões: $exception")
             }
     }
 
@@ -104,6 +138,7 @@ class MainActivity : AppCompatActivity() {
                         capaUrl = document.getString("capaUrl") ?: "",
                         titulo = document.getString("titulo") ?: "",
                         episodios = document.getString("episodios") ?: "",
+                        duracao = document.getString("duracao") ?: "",
                         sinopse = document.getString("sinopse") ?: "",
                         genero = document.getString("genero") ?: "",
                         avaliacao = document.getString("avaliacao") ?: "",
@@ -115,7 +150,7 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 // Trate erros aqui
-                println("Erro ao carregar dados: $exception")
+                println("Erro ao carregar Minha Lista: $exception")
             }
     }
 }

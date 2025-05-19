@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
@@ -19,12 +20,12 @@
             android:layout_marginBottom="5dp"
             android:scaleType="centerCrop"
             android:src="@mipmap/imagem_teste"
-            app:layout_constraintBottom_toTopOf="@+id/textView6"
+            app:layout_constraintBottom_toTopOf="@+id/avaliacaoLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tituloLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -39,48 +40,48 @@
             android:maxLines="2"
             android:ellipsize="end"
             android:text="Exemplo Título"
-            app:layout_constraintStart_toEndOf="@+id/textView2"
-            app:layout_constraintTop_toTopOf="@+id/textView2" />
+            app:layout_constraintStart_toEndOf="@+id/tituloLabel"
+            app:layout_constraintTop_toTopOf="@+id/tituloLabel" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/episodiosLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:text="Episódios: "
             app:layout_constraintStart_toEndOf="@+id/capa"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintTop_toBottomOf="@+id/tituloLabel" />
 
         <TextView
             android:id="@+id/episodios"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00"
-            app:layout_constraintStart_toEndOf="@+id/textView4"
-            app:layout_constraintTop_toTopOf="@+id/textView4" />
+            app:layout_constraintStart_toEndOf="@+id/episodiosLabel"
+            app:layout_constraintTop_toTopOf="@+id/episodiosLabel" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/sinopseLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:text="Sinopse: "
             app:layout_constraintStart_toEndOf="@+id/capa"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+            app:layout_constraintTop_toBottomOf="@id/barreiraEpisDuracao" />
 
         <TextView
             android:id="@+id/sinopse"
             android:layout_width="175dp"
             android:layout_height="wrap_content"
-            android:maxLines="4"
             android:ellipsize="end"
+            android:maxLines="4"
             android:text="Exemplo Sinopse"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+            app:layout_constraintStart_toEndOf="@+id/sinopseLabel"
+            app:layout_constraintTop_toTopOf="@+id/sinopseLabel" />
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/generoLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -95,11 +96,11 @@
             android:maxLines="3"
             android:ellipsize="end"
             android:text="Ação, Aventura"
-            app:layout_constraintStart_toEndOf="@+id/textView7"
-            app:layout_constraintTop_toTopOf="@+id/textView7" />
+            app:layout_constraintStart_toEndOf="@+id/generoLabel"
+            app:layout_constraintTop_toTopOf="@+id/generoLabel" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/avaliacaoLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -112,8 +113,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0.0"
-            app:layout_constraintStart_toEndOf="@+id/textView6"
-            app:layout_constraintTop_toTopOf="@+id/textView6" />
+            app:layout_constraintStart_toEndOf="@+id/avaliacaoLabel"
+            app:layout_constraintTop_toTopOf="@+id/avaliacaoLabel" />
+
+        <TextView
+            android:id="@+id/duracaoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="Duração: "
+            app:layout_constraintStart_toEndOf="@+id/capa"
+            app:layout_constraintTop_toBottomOf="@id/episodiosLabel" />
+
+        <TextView
+            android:id="@+id/duracao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            app:layout_constraintStart_toEndOf="@+id/duracaoLabel"
+            app:layout_constraintTop_toTopOf="@+id/duracaoLabel" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barreiraEpisDuracao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="episodiosLabel, duracaoLabel" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -16,10 +16,13 @@ class SugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<S
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val capa: ImageView = view.findViewById(R.id.capa)
         val titulo: TextView = view.findViewById(R.id.titulo)
+        val episodiosLabel: TextView = view.findViewById(R.id.episodiosLabel)
         val episodios: TextView = view.findViewById(R.id.episodios)
         val sinopse: TextView = view.findViewById(R.id.sinopse)
         val genero: TextView = view.findViewById(R.id.genero)
         val avaliacao: TextView = view.findViewById(R.id.avaliacao)
+        val duracaoLabel: TextView = view.findViewById(R.id.duracaoLabel)
+        val duracao: TextView = view.findViewById(R.id.duracao)
     }
 
     //Infla o layout
@@ -32,16 +35,28 @@ class SugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<S
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = animeList[position]
 
-        Log.d("SugestAdapter", "Essa merda funcionou: ${item.titulo}")
-
         Glide.with(holder.itemView.context)
             .load(item.capaUrl)
             .into(holder.capa)
         holder.titulo.text = item.titulo
-        holder.episodios.text = item.episodios
         holder.sinopse.text = item.sinopse
         holder.genero.text = item.genero
         holder.avaliacao.text = item.avaliacao
+
+        //Carrega Episódios ou Duração
+        if (!item.episodios.isNullOrEmpty()) {
+            holder.episodiosLabel.visibility = View.VISIBLE
+            holder.episodios.visibility = View.VISIBLE
+            holder.duracaoLabel.visibility = View.GONE
+            holder.duracao.visibility = View.GONE
+            holder.episodios.text = item.episodios
+        } else {
+            holder.episodiosLabel.visibility = View.GONE
+            holder.episodios.visibility = View.GONE
+            holder.duracaoLabel.visibility = View.VISIBLE
+            holder.duracao.visibility = View.VISIBLE
+            holder.duracao.text = item.duracao
+        }
     }
 
     override fun getItemCount(): Int = animeList.size

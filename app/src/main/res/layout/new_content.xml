@@ -65,14 +65,16 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="Duração: "
+            android:visibility="visible"
             app:layout_constraintStart_toEndOf="@+id/capa"
-            app:layout_constraintTop_toBottomOf="@+id/episodiosLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/tituloLabel" />
 
         <TextView
             android:id="@+id/duracao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00"
+            android:visibility="visible"
             app:layout_constraintStart_toEndOf="@+id/duracaoLabel"
             app:layout_constraintTop_toTopOf="@+id/duracaoLabel" />
     </androidx.constraintlayout.widget.ConstraintLayout>
