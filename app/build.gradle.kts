@@ -4,6 +4,7 @@ plugins {
     //id("com.android.application")
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
+    id("kotlin-parcelize")
     //ksp
     //alias(libs.plugins.ksp)
 }
@@ -59,6 +60,7 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     //Glide
     implementation(libs.glide)
+    implementation (libs.wasabeef.glide.transformations)
     //ksp(libs.glide.compiler)
 
     // Import the Firebase BoM

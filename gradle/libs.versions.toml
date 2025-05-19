@@ -16,6 +16,7 @@ recyclerview = "1.4.0"
 cardview = "1.0.0"
 swiperefreshlayout = "1.1.0"
 glide = "4.16.0"
+glideTransformations = "4.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +40,7 @@ androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "s
 #Glide
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+wasabeef-glide-transformations = { group = "jp.wasabeef", name = "glide-transformations", version.ref = "glideTransformations" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
