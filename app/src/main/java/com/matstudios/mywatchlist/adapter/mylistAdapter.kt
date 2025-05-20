@@ -1,13 +1,15 @@
 package com.matstudios.mywatchlist.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.matstudios.mywatchlist.R
 import com.bumptech.glide.Glide
+import com.matstudios.mywatchlist.DetailContentActivity
+import com.matstudios.mywatchlist.R
 
 class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<MylistAdapter.ViewHolder>(){
 
@@ -35,6 +37,7 @@ class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<M
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = animeList[position]
 
+
         Glide.with(holder.itemView.context)
             .load(item.capaUrl)
             .into(holder.capa)
@@ -43,6 +46,13 @@ class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<M
         holder.genero.text = item.genero
         holder.avaliacao.text = item.avaliacao
         holder.status.text = item.status
+        holder.itemView.setOnClickListener {
+            // Lógica para lidar com o clique no item
+            val context = holder.itemView.context
+            val detalhes = Intent (context, DetailContentActivity::class.java)
+            detalhes.putExtra("anime", item)
+            context.startActivity(detalhes)
+        }
 
         //Carrega Episódios ou Duração
         if (!item.episodios.isNullOrEmpty()) {

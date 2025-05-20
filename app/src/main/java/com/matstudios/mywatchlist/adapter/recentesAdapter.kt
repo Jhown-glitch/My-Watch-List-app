@@ -1,5 +1,6 @@
 package com.matstudios.mywatchlist.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.matstudios.mywatchlist.DetailContentActivity
 import com.matstudios.mywatchlist.R
 
 class recentesAdapter(private val animeList: List<anime>) : RecyclerView.Adapter<recentesAdapter.ViewHolder>() {
@@ -34,6 +36,13 @@ class recentesAdapter(private val animeList: List<anime>) : RecyclerView.Adapter
             .load(item.capaUrl)
             .into(holder.capa)
         holder.titulo.text = item.titulo
+        holder.itemView.setOnClickListener {
+            // Lógica para lidar com o clique no item
+            val context = holder.itemView.context
+            val detalhes = Intent (context, DetailContentActivity::class.java)
+            detalhes.putExtra("anime", item)
+            context.startActivity(detalhes)
+        }
 
         //Mostrar episódios ou duração, não os dois ao mesmo tempo
         if (!item.episodios.isNullOrEmpty()) {
