@@ -2,6 +2,7 @@ package com.matstudios.mywatchlist
 
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -47,8 +48,24 @@ class DetailContentActivity : AppCompatActivity() {
             binding.ratingBar.rating = it.avaliacao.toFloatOrNull() ?: 0f
             binding.avaliacao.text = it.avaliacao
             binding.status.text = it.status
-            binding.episodios.text = it.episodios
-            binding.duracao.text = it.duracao
+
+            if (!it.episodios.isNullOrEmpty()) {
+                binding.episodiosLabel.visibility = View.VISIBLE
+                binding.episodios.visibility = View.VISIBLE
+                binding.duracaoLabel.visibility = View.GONE
+                binding.duracao.visibility = View.GONE
+                binding.episodios.text = it.episodios
+            } else {
+                binding.episodiosLabel.visibility = View.GONE
+                binding.episodios.visibility = View.GONE
+                binding.temporadaLabel.visibility = View.GONE
+                binding.temporada.visibility = View.GONE
+                binding.episAtualLabel.visibility = View.GONE
+                binding.episAtual.visibility = View.GONE
+                binding.duracaoLabel.visibility = View.VISIBLE
+                binding.duracao.visibility = View.VISIBLE
+                binding.duracao.text = it.duracao
+            }
 
 
         }

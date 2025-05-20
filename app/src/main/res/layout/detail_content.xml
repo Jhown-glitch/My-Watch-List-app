@@ -211,7 +211,7 @@
                 app:layout_constraintStart_toEndOf="@+id/capa" />
 
             <TextView
-                android:id="@+id/textView22"
+                android:id="@+id/episAtual"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00/00"
