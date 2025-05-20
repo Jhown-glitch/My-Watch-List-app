@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.matstudios.mywatchlist.adapter.MylistAdapter
 import com.matstudios.mywatchlist.adapter.SugestAdapter
@@ -30,15 +31,21 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        //Mensagem e Verificação de Usuário
+        val user = FirebaseAuth.getInstance().currentUser
+
+        val nomeUsuario = when {
+            user == null -> "Usuário"
+            user.isAnonymous -> "Visitante"
+            !user.displayName.isNullOrEmpty() -> user.displayName
+            !user.email.isNullOrEmpty() -> user.email?.substringBefore("@")
+            else -> "Usuário"
+        }
+        binding.HelloU.text = "Olá, $nomeUsuario!"
+
         carregarRecentes()
         carregarSugestoes()
         carregarMinhaLista()
-
-        val nomeUsuario: String? = null
-        val mensagemBoasVindas = "Olá, ${nomeUsuario ?: "visitante"}!"
-        binding.HelloU.text = mensagemBoasVindas
-
-
 
         // Configuração do RecyclerView
         val recyclerViewSugest = findViewById<RecyclerView>(R.id.sugestSection)

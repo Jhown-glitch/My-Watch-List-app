@@ -72,6 +72,10 @@ dependencies {
     implementation(libs.firebase.storage)
     //Firebase Analytics
     implementation(libs.firebase.analytics)
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.firebase.auth.ktx)
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
     testImplementation(libs.junit)
