@@ -219,7 +219,7 @@
                 app:layout_constraintTop_toTopOf="@+id/episAtualLabel" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/addRem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Button"

@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.matstudios.mywatchlist.ui.login.LoginActivity
 
 class StartActivity : AppCompatActivity() {
@@ -23,6 +25,19 @@ class StartActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             // Usuário já está logado, redirecionar para a tela principal
+            val db = FirebaseFirestore.getInstance()
+            val userDoc = db.collection("users").document(user.uid)
+
+            userDoc.get().addOnSuccessListener { documentSnapshot ->
+                if (!documentSnapshot.exists()) {
+                    val perfilData = hashMapOf(
+                        "tipo" to if (user.isAnonymous) "visitante" else "logado",
+                        "nome" to (user.displayName ?: user.email?.substringBefore("@") ?: "Usuário")
+                        "criadoEm" to FieldValue.serverTimestamp()
+                    )
+                    userDoc.set(perfilData)
+                }
+            }
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
