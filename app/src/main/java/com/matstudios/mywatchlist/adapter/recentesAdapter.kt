@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.matstudios.mywatchlist.DetailContentActivity
 import com.matstudios.mywatchlist.R
+import java.util.Locale
 
-class recentesAdapter(private val animeList: List<anime>) : RecyclerView.Adapter<recentesAdapter.ViewHolder>() {
+class recentesAdapter(private val contentList: List<content>) : RecyclerView.Adapter<recentesAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val capa: ImageView = view.findViewById(R.id.capa)
@@ -27,22 +28,16 @@ class recentesAdapter(private val animeList: List<anime>) : RecyclerView.Adapter
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int = animeList.size
+    override fun getItemCount(): Int = contentList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = animeList[position]
+        val item = contentList[position]
+        val idioma = Locale.getDefault().language
 
         Glide.with(holder.itemView.context)
             .load(item.capaUrl)
             .into(holder.capa)
-        holder.titulo.text = item.titulo
-        holder.itemView.setOnClickListener {
-            // Lógica para lidar com o clique no item
-            val context = holder.itemView.context
-            val detalhes = Intent (context, DetailContentActivity::class.java)
-            detalhes.putExtra("anime", item)
-            context.startActivity(detalhes)
-        }
+        holder.titulo.text = item.titulo[idioma] ?: "Sem Título"
 
         //Mostrar episódios ou duração, não os dois ao mesmo tempo
         if (!item.episodios.isNullOrEmpty()) {
@@ -64,7 +59,14 @@ class recentesAdapter(private val animeList: List<anime>) : RecyclerView.Adapter
             holder.duracaoLabel.visibility = View.GONE
             holder.duracao.visibility = View.GONE
         }
-    }
 
+        holder.itemView.setOnClickListener {
+            // Lógica para lidar com o clique no item
+            val context = holder.itemView.context
+            val detalhes = Intent (context, DetailContentActivity::class.java)
+            detalhes.putExtra("content", item)
+            context.startActivity(detalhes)
+        }
+    }
 
 }

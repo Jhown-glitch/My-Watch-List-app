@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.matstudios.mywatchlist.DetailContentActivity
 import com.matstudios.mywatchlist.R
+import java.util.Locale
 
-class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<MylistAdapter.ViewHolder>(){
+class MylistAdapter (private val contentList: List<content>): RecyclerView.Adapter<MylistAdapter.ViewHolder>(){
 
     //Classe interna para representar cada item da lista
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -35,24 +36,17 @@ class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<M
 
     //Vincula os dados aos componentes do layout
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = animeList[position]
-
+        val item = contentList[position]
+        val idioma = Locale.getDefault().language
 
         Glide.with(holder.itemView.context)
             .load(item.capaUrl)
             .into(holder.capa)
-        holder.titulo.text = item.titulo
-        holder.sinopse.text = item.sinopse
-        holder.genero.text = item.genero
+        holder.titulo.text = item.titulo[idioma] ?: "Sem Título"
+        holder.sinopse.text = item.sinopse[idioma] ?: "Sem Sinopse"
+        holder.genero.text = item.genero[idioma]?.joinToString(", ") ?: "-"
         holder.avaliacao.text = item.avaliacao
         holder.status.text = item.status
-        holder.itemView.setOnClickListener {
-            // Lógica para lidar com o clique no item
-            val context = holder.itemView.context
-            val detalhes = Intent (context, DetailContentActivity::class.java)
-            detalhes.putExtra("anime", item)
-            context.startActivity(detalhes)
-        }
 
         //Carrega Episódios ou Duração
         if (!item.episodios.isNullOrEmpty()) {
@@ -68,8 +62,16 @@ class MylistAdapter (private val animeList: List<anime>): RecyclerView.Adapter<M
             holder.duracao.visibility = View.VISIBLE
             holder.duracao.text = item.duracao
         }
+
+        holder.itemView.setOnClickListener {
+            // Lógica para lidar com o clique no item
+            val context = holder.itemView.context
+            val detalhes = Intent (context, DetailContentActivity::class.java)
+            detalhes.putExtra("content", item)
+            context.startActivity(detalhes)
+        }
     }
 
-    override fun getItemCount(): Int = animeList.size
+    override fun getItemCount(): Int = contentList.size
 
 }

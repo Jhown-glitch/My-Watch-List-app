@@ -22,22 +22,29 @@ class StartActivity : AppCompatActivity() {
             insets
         }
 
+        //Pega o usuário atual
         val user = FirebaseAuth.getInstance().currentUser
+
+        //Verifica se o usuário está logado
         if (user != null) {
-            // Usuário já está logado, redirecionar para a tela principal
+            //Cria os documentos do usuário no Firestore
             val db = FirebaseFirestore.getInstance()
             val userDoc = db.collection("users").document(user.uid)
 
             userDoc.get().addOnSuccessListener { documentSnapshot ->
+
+                //Se o documento não existir, cria um novo documento com os dados do usuário
                 if (!documentSnapshot.exists()) {
                     val perfilData = hashMapOf(
                         "tipo" to if (user.isAnonymous) "visitante" else "logado",
-                        "nome" to (user.displayName ?: user.email?.substringBefore("@") ?: "Usuário")
+                        "nome" to (user.displayName ?: user.email?.substringBefore("@") ?: "Usuário"),
                         "criadoEm" to FieldValue.serverTimestamp()
                     )
                     userDoc.set(perfilData)
                 }
             }
+
+            //Usuário já está logado, redirecionar para a tela principal
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()

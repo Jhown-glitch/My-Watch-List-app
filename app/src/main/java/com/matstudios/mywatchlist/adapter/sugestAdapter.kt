@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.matstudios.mywatchlist.DetailContentActivity
 import com.matstudios.mywatchlist.R
+import java.util.Locale
 
-class SugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<SugestAdapter.ViewHolder>(){
+class SugestAdapter (private val contentList: List<content>): RecyclerView.Adapter<SugestAdapter.ViewHolder>(){
 
     //Classe interna para representar cada item da lista
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -34,22 +35,16 @@ class SugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<S
 
     //Vincula os dados aos componentes do layout
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = animeList[position]
+        val item = contentList[position]
+        val idioma = Locale.getDefault().language
 
         Glide.with(holder.itemView.context)
             .load(item.capaUrl)
             .into(holder.capa)
-        holder.titulo.text = item.titulo
-        holder.sinopse.text = item.sinopse
-        holder.genero.text = item.genero
+        holder.titulo.text = item.titulo[idioma] ?: "Sem Título"
+        holder.sinopse.text = item.sinopse[idioma] ?: "Sem Sinopse"
+        holder.genero.text = item.genero[idioma]?.joinToString(", ") ?: "-"
         holder.avaliacao.text = item.avaliacao
-        holder.itemView.setOnClickListener {
-            // Lógica para lidar com o clique no item
-            val context = holder.itemView.context
-            val detalhes = Intent (context, DetailContentActivity::class.java)
-            detalhes.putExtra("anime", item)
-            context.startActivity(detalhes)
-        }
 
         //Carrega Episódios ou Duração
         if (!item.episodios.isNullOrEmpty()) {
@@ -65,7 +60,15 @@ class SugestAdapter (private val animeList: List<anime>): RecyclerView.Adapter<S
             holder.duracao.visibility = View.VISIBLE
             holder.duracao.text = item.duracao
         }
+
+        holder.itemView.setOnClickListener {
+            // Lógica para lidar com o clique no item
+            val context = holder.itemView.context
+            val intent = Intent (context, DetailContentActivity::class.java)
+            intent.putExtra("content", item)
+            context.startActivity(intent)
+        }
     }
 
-    override fun getItemCount(): Int = animeList.size
+    override fun getItemCount(): Int = contentList.size
 }
