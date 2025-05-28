@@ -1,8 +1,12 @@
 package com.matstudios.mywatchlist.adapter
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class contentUser(
-    val content: content,
+    val content: content? = null,
     val minhaNota: String = "",
     val progresso: String = "",
     val status: String = ""
-)
+) : Parcelable

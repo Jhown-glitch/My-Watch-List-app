@@ -31,8 +31,8 @@ class mylistFullAdapter (private val contentList: List<contentUser>): RecyclerVi
         val item = contentList[position]
         val idioma = Locale.getDefault().language
 
-        Glide.with(holder.itemView.context).load(item.content.capaUrl).into(holder.capa)
-        holder.titulo.text = item.content.titulo[idioma] ?: "Sem Título"
+        Glide.with(holder.itemView.context).load(item.content?.capaUrl).into(holder.capa)
+        holder.titulo.text = item.content?.titulo?.get(idioma) ?: "Sem Título"
         holder.avaliaPessoal.text = item.minhaNota.toString()
         holder.status.text = item.status
         holder.progresso.text = item.progresso.toString()

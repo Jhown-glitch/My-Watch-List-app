@@ -96,8 +96,14 @@ class DetailContentActivity : AppCompatActivity() {
 
                 val db = FirebaseFirestore.getInstance()
                 val docRef = db.collection("users").document(user.uid).collection("mylist").document(content.id)
+                // Verifica o tipo do conteúdo
+                val tipo = content.tipoID.lowercase() // Garante que seja minúsculo
+                val contentREF = db.collection(tipo + "s").document(content.id) // Define a coleção correta
                 val referencia = hashMapOf(
-                    "ref" to db.collection("animes").document(content.id)
+                    "ref" to contentREF,
+                    "status" to "Planejando",
+                    "minhaNota" to "4,5",
+                    "progresso" to "0"
                 )
 
                 docRef.set(referencia)

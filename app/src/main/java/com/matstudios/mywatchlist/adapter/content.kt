@@ -24,6 +24,7 @@ package com.matstudios.mywatchlist.adapter
         val status: String = "",
         val tags: Map<String, List<String>> = mapOf(),
         val temporadas: String? = "",
+        val tipoID: String = "",
         val tipo: Map<String, String> = mapOf(),
         val titulo: Map<String, String> = mapOf(),
         val trailer: String = ""
