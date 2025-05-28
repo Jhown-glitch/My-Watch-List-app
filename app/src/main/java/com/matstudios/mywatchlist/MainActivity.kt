@@ -1,5 +1,6 @@
 package com.matstudios.mywatchlist
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -49,18 +50,13 @@ class MainActivity : AppCompatActivity() {
         carregarSugestoes()
         carregarMinhaLista(uid = uid.toString())
 
+        // Clique no Ver Tudo Minha Lista
+        binding.verTudoML.setOnClickListener {
+            // Lógica para abrir a tela de Minha Lista completa
+            val intent = Intent(this, MyListActivity::class.java)
+            startActivity(intent)
+        }
 
-//        val animeList = listOf(
-//            content(
-//                capaUrl = "https://upload.wikimedia.org/wikipedia/pt/c/c9/Shingeki_no_Kyojin_4%C2%AA_temporada.jpg",
-//                titulo = "Exemplo Título",
-//                episodios = "00",
-//                sinopse = "Exemplo Sinopse",
-//                genero = "Exemplo Gênero",
-//                avaliacao = "0.0",
-//                status = "Planejando"
-//            )
-//        )
     }
 
     //Carregando dados para a sessão Recentes
