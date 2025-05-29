@@ -10,8 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.matstudios.mywatchlist.adapter.content
 import com.matstudios.mywatchlist.databinding.ActivityDetailContentBinding
 import jp.wasabeef.glide.transformations.BlurTransformation
@@ -88,23 +90,27 @@ class DetailContentActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                if (content == null || content.id.isBlank()) {
+                if (content.id.isBlank()) {
                     Log.e("DetailContentActivity", "ID do conteúdo está vazio ou nulo.")
                     Toast.makeText(this, "Erro: ID do conteúdo inválido.", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
                 val db = FirebaseFirestore.getInstance()
-                val docRef = db.collection("users").document(user.uid).collection("mylist").document(content.id)
+
+
                 // Verifica o tipo do conteúdo
                 val tipo = content.tipoID.lowercase() // Garante que seja minúsculo
-                val contentREF = db.collection(tipo + "s").document(content.id) // Define a coleção correta
+                val contentREF = db.document("${tipo}s/${content.id}") // Define a coleção correta
+
                 val referencia = hashMapOf(
                     "ref" to contentREF,
                     "status" to "Planejando",
-                    "minhaNota" to "4,5",
+                    "minhaNota" to "4.5",
                     "progresso" to "0"
                 )
+
+                val docRef = db.collection("users").document(user.uid).collection("mylist").document(content.id)
 
                 docRef.set(referencia)
                     .addOnSuccessListener {

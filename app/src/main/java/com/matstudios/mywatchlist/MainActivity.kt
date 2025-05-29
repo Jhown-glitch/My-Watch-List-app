@@ -2,15 +2,16 @@ package com.matstudios.mywatchlist
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.matstudios.mywatchlist.adapter.MylistAdapter
 import com.matstudios.mywatchlist.adapter.SugestAdapter
 import com.matstudios.mywatchlist.adapter.content
@@ -21,12 +22,19 @@ import java.util.Date
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var firebaseAuth: FirebaseAuth
+    private var db: FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    private var mListaListener: ListenerRegistration? = null
+
+    private lateinit var mylistAdapter: MylistAdapter
+    private val mylistLista = mutableListOf<content>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        enableEdgeToEdge()
         setContentView(binding.root)
+        enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -48,7 +56,12 @@ class MainActivity : AppCompatActivity() {
 
         carregarRecentes()
         carregarSugestoes()
-        carregarMinhaLista(uid = uid.toString())
+        //carregarMinhaLista(uid = uid.toString())
+
+        binding.mylistSection.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        mylistAdapter = MylistAdapter(mylistLista)
+        binding.mylistSection.adapter = mylistAdapter
+        Log.d("MainActivity", "Seção Minha Lista configurada no onCreate.")
 
         // Clique no Ver Tudo Minha Lista
         binding.verTudoML.setOnClickListener {
@@ -57,6 +70,27 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            carregarMinhaLista(uid = user.uid)
+        } else {
+            // Limpa a lista e notifica o adapter existente
+            mylistLista.clear()
+            if (::mylistAdapter.isInitialized) { // Verifica se o adapter foi criado em onCreate
+                mylistAdapter.notifyDataSetChanged()
+            }
+            Log.d("MainActivity", "Usuário não logado, Minha Lista limpa.")
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mListaListener?.remove()
+        Log.d("MainActivity", "Listener de Minha Lista removido.")
     }
 
     //Carregando dados para a sessão Recentes
@@ -115,36 +149,94 @@ class MainActivity : AppCompatActivity() {
 
     //Carregando dados para a sessão Minha Lista
     private fun carregarMinhaLista(uid: String) {
-        val db = FirebaseFirestore.getInstance()
-        val listaMinhaLista = mutableListOf<content>()
+        // Listener do Firestore (como nas versões anteriores que te mandei)
+        mListaListener?.remove() // Remove listener antigo
 
-        db.collection("users").document(uid).collection("mylist")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val total = snapshot.size()
-                var carregados = 0
+        mListaListener = db.collection("users").document(uid).collection("mylist")
+            .addSnapshotListener { snapshots, error ->
+                if (error != null) {
+                    Log.w("MinhaLista", "Listen failed.", error)
+                    // Atualiza a lista existente e notifica o adapter existente
+                    mylistLista.clear()
+                    if (::mylistAdapter.isInitialized) mylistAdapter.notifyDataSetChanged()
+                    return@addSnapshotListener
+                }
 
-                for (document in snapshot) {
-                    val ref = document.getDocumentReference("ref")
-                    ref?.get()?.addOnSuccessListener { doc ->
-                        val item = doc.toObject(content::class.java)
-                        if (item != null) {
-                            listaMinhaLista.add(item)
+                if (snapshots == null) {
+                    Log.d("MinhaLista", "Snapshot nulo recebido.")
+                    mylistLista.clear()
+                    if (::mylistAdapter.isInitialized) mylistAdapter.notifyDataSetChanged()
+                    return@addSnapshotListener
+                }
+
+                Log.d("MinhaLista", "Dados recebidos para Minha Lista. Documentos: ${snapshots.size()}")
+                val documentosDaMinhaLista = snapshots.documents
+                val listaTemporariaParaNovosItens = mutableListOf<content>() // Nova lista temporária para esta atualização
+
+                if (documentosDaMinhaLista.isEmpty()) {
+                    Log.d("MinhaLista", "Nenhum item na Minha Lista do usuário.")
+                    mylistLista.clear()
+                    if (::mylistAdapter.isInitialized) mylistAdapter.notifyDataSetChanged()
+                    return@addSnapshotListener
+                }
+
+                val totalDeReferencias = documentosDaMinhaLista.size
+                var referenciasProcessadas = 0
+
+                // Caso especial: se a lista de documentos da MinhaLista estiver vazia
+                // mas totalDeReferencias for 0 (o que não deveria acontecer se isEmpty() já foi checado,
+                // mas para segurança)
+                if (totalDeReferencias == 0) {
+                    mylistLista.clear()
+                    if (::mylistAdapter.isInitialized) mylistAdapter.notifyDataSetChanged()
+                    return@addSnapshotListener
+                }
+
+                documentosDaMinhaLista.forEach { docMinhaLista ->
+                    val refConteudo = docMinhaLista.getDocumentReference("ref")
+
+                    if (refConteudo == null) {
+                        Log.w("MinhaLista", "Referência 'ref' nula no documento ${docMinhaLista.id}")
+                        referenciasProcessadas++
+                        if (referenciasProcessadas == totalDeReferencias) {
+                            // Todos processados, atualiza a lista do adapter
+                            mylistLista.clear()
+                            mylistLista.addAll(listaTemporariaParaNovosItens)
+                            if (::mylistAdapter.isInitialized) mylistAdapter.notifyDataSetChanged()
+                            Log.d("MinhaLista", "Adapter atualizado (com refs nulas). Itens: ${mylistLista.size}")
                         }
-                        carregados++
-                        if (carregados == total) {
-                            // Todas as consultas foram finalizadas, exibir o RecyclerView
-                            // Configuração do RecyclerView Minha Lista
-                            binding.mylistSection.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-                            binding.mylistSection.adapter = MylistAdapter(listaMinhaLista)
-                        }
-
+                        return@forEach
                     }
+
+                    refConteudo.get()
+                        .addOnSuccessListener { docConteudo ->
+                            val item = docConteudo.toObject(content::class.java)
+                            if (item != null) {
+                                listaTemporariaParaNovosItens.add(item)
+                            } else {
+                                Log.w("MinhaLista", "Falha ao converter doc ${docConteudo.id} para content.")
+                            }
+                            referenciasProcessadas++
+                            if (referenciasProcessadas == totalDeReferencias) {
+                                mylistLista.clear()
+                                mylistLista.addAll(listaTemporariaParaNovosItens)
+                                if (::mylistAdapter.isInitialized) mylistAdapter.notifyDataSetChanged()
+                                Log.d("MinhaLista", "Adapter atualizado. Itens: ${mylistLista.size}")
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("MinhaLista", "Erro ao buscar conteúdo referenciado ${refConteudo.path}: $e")
+                            referenciasProcessadas++
+                            if (referenciasProcessadas == totalDeReferencias) {
+                                mylistLista.clear()
+                                mylistLista.addAll(listaTemporariaParaNovosItens)
+                                if (::mylistAdapter.isInitialized) mylistAdapter.notifyDataSetChanged()
+                                Log.d("MinhaLista", "Adapter atualizado (com falhas em refs). Itens: ${mylistLista.size}")
+                            }
+                        }
                 }
             }
-            .addOnFailureListener { exception ->
-                // Trate erros aqui
-                println("Erro ao carregar Minha Lista: $exception")
-            }
+        Log.d("MainActivity", "Listener da Minha Lista configurado para UID: $uid")
     }
+
 }
