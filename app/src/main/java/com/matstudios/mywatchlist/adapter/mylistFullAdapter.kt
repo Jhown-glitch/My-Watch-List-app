@@ -33,9 +33,9 @@ class mylistFullAdapter (private val contentList: List<contentUser>): RecyclerVi
 
         Glide.with(holder.itemView.context).load(item.content?.capaUrl).into(holder.capa)
         holder.titulo.text = item.content?.titulo?.get(idioma) ?: "Sem Título"
-        holder.avaliaPessoal.text = item.minhaNota.toString()
+        holder.avaliaPessoal.text = item.minhaNota
         holder.status.text = item.status
-        holder.progresso.text = item.progresso.toString()
+        holder.progresso.text = item.progresso
 
     }
 
