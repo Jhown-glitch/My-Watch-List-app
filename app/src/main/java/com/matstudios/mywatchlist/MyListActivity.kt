@@ -1,8 +1,14 @@
 package com.matstudios.mywatchlist
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,9 +28,16 @@ class MyListActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
 
     private lateinit var itemsAdapter: mylistFullAdapter
-    private val contentList = mutableListOf<contentUser>()
+    private var contentList = mutableListOf<contentUser>()
 
     private var myListListener: ListenerRegistration? = null
+
+    // Declaração do launcher
+    private lateinit var detailContentLauncher: ActivityResultLauncher<Intent>
+
+    // IDs dos itens para fácil remoção
+    private var itemPositionClicked: Int = -1 // Para saber qual item foi clicado e possivelmente modificado
+    private var itemIdClicked: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +54,42 @@ class MyListActivity : AppCompatActivity() {
 
         setupRecyclerView()
 
+        detailContentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            // Este callback é chamado quando DetailContentActivity finaliza
+            if (result.resultCode == RESULT_OK) {
+                // Algo mudou e DetailContentActivity está retornando um resultado positivo
+                val data = result.data
+                val itemWasRemoved = data?.getBooleanExtra("ITEM_REMOVED", false) ?: false
+                val itemWasAdded = data?.getBooleanExtra("ITEM_ADDED", false) ?: false // Se você também tiver adição
+                val modifiedItemId = data?.getStringExtra("MODIFIED_ITEM_ID")
+
+                if (itemWasRemoved && modifiedItemId != null) {
+                    // Remover o item da lista
+                    //Encontrar o item pelo ID e removê-lo:
+                    val itemIndex = contentList.indexOfFirst { it.content?.id == modifiedItemId }
+                    if (itemIndex != -1) {
+                        contentList.removeAt(itemIndex)
+                        itemsAdapter.notifyItemRemoved(itemIndex)
+                    } else {
+                        // Se não encontrar pelo ID, talvez recarregar tudo como fallback
+                        carregarMinhaLista(uid = FirebaseAuth.getInstance().currentUser!!.uid)
+                    }
+                    Log.d("MyListActivity", "Item $modifiedItemId removido com sucesso")
+                    Toast.makeText(this, "Item removido com sucesso", Toast.LENGTH_SHORT).show()
+                } else if (itemWasAdded) {
+                    // Se um item foi adicionADO na DetailActivity (menos comum para "minha lista",
+                    // mas possível se DetailActivity puder adicionar itens que não vieram dela)
+                    Log.d("MyListActivity", "Item adicionado, recarregando lista.")
+                    carregarMinhaLista(FirebaseAuth.getInstance().currentUser!!.uid)
+                    Toast.makeText(this, "Item adicionado com sucesso", Toast.LENGTH_SHORT).show()
+                }
+                // Adicione mais verificações se necessário, por exemplo, se um item foi EDITADO
+            } else if (result.resultCode == Activity.RESULT_CANCELED) {
+                // O usuário pode ter pressionado "Voltar" sem fazer alterações significativas
+                Log.d("MyListActivity", "DetailContentActivity retornou RESULT_CANCELED")
+            }
+        }
+
         // Obtendo UID do usuário logado
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
         if (uid != null) {
@@ -51,10 +100,25 @@ class MyListActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        itemsAdapter = mylistFullAdapter(contentList)
+        itemsAdapter = mylistFullAdapter(contentList, this::onItemClicked)
         binding.recyclerView.layoutManager = GridLayoutManager(this, 2)
         binding.recyclerView.adapter = itemsAdapter
         Log.d("MyListActivity", "RecyclerView configurado")
+    }
+
+    // Função que é chamada quando um item da lista é clicado
+    // Esta função agora usará o 'detailContentLauncher'
+    private fun onItemClicked(item: contentUser, position: Int) {
+        itemPositionClicked = position
+        itemIdClicked = item.content?.id
+
+        val intent = Intent(this, DetailContentActivity::class.java)
+        intent.putExtra("content", item.content) // item.content DEVE ser Parcelable
+        intent.putExtra("naMinhaLista", true)
+        if (item.content?.id != null) { // Passar o ID para DetailActivity é útil
+            intent.putExtra("CONTENT_ID", item.content?.id)
+        }
+        detailContentLauncher.launch(intent) // <<== Inicie a activity usando o launcher
     }
 
     // Carregando dados da Main Activity da sessão Minha Lista

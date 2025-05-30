@@ -1,5 +1,6 @@
 package com.matstudios.mywatchlist.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,10 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.matstudios.mywatchlist.DetailContentActivity
 import com.matstudios.mywatchlist.R
 import java.util.Locale
 
-class mylistFullAdapter (private val contentList: List<contentUser>): RecyclerView.Adapter<mylistFullAdapter.ViewHolder>(){
+class mylistFullAdapter (private var contentList: List<contentUser>, private val onItemClicked: (item: contentUser, position: Int) -> Unit): RecyclerView.Adapter<mylistFullAdapter.ViewHolder>(){
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val capa = view.findViewById<ImageView>(R.id.capa)
@@ -36,8 +38,18 @@ class mylistFullAdapter (private val contentList: List<contentUser>): RecyclerVi
         holder.avaliaPessoal.text = item.minhaNota
         holder.status.text = item.status
         holder.progresso.text = item.progresso
-
+        holder.itemView.setOnClickListener {
+            onItemClicked(item, position) // Chama a função lambda passada pela Activity
+//            val context = holder.itemView.context
+//            val intent = Intent(holder.itemView.context, DetailContentActivity::class.java)
+//            intent.putExtra("content", item.content)
+//            intent.putExtra("naMinhaLista", true)
+//            context.startActivity(intent)
+        }
     }
 
-
+    fun updateData(newList: List<contentUser>) {
+        contentList = newList
+        notifyDataSetChanged() // Ou usar DiffUtil para melhor performance
+    }
 }
