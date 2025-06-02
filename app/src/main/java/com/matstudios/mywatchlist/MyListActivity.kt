@@ -1,9 +1,13 @@
 package com.matstudios.mywatchlist
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.ContextMenu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -21,23 +25,23 @@ import com.matstudios.mywatchlist.adapter.content
 import com.matstudios.mywatchlist.adapter.contentUser
 import com.matstudios.mywatchlist.adapter.mylistFullAdapter
 import com.matstudios.mywatchlist.databinding.ActivityMyListBinding
+import java.util.Locale
 
 class MyListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMyListBinding
     private lateinit var db: FirebaseFirestore
-
     private lateinit var itemsAdapter: mylistFullAdapter
-    private var contentList = mutableListOf<contentUser>()
-
+    private var contentList: MutableList<contentUser> = mutableListOf()
     private var myListListener: ListenerRegistration? = null
-
     // Declaração do launcher
     private lateinit var detailContentLauncher: ActivityResultLauncher<Intent>
-
     // IDs dos itens para fácil remoção
     private var itemPositionClicked: Int = -1 // Para saber qual item foi clicado e possivelmente modificado
     private var itemIdClicked: String? = null
+    // Variáveis para o item do clique longo
+    private var longClickedItemData: contentUser? = null
+    private var longClickedItemPositionAdapter: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,15 +56,28 @@ class MyListActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
+        initializeDetailContentLauncher()
         setupRecyclerView()
 
-        detailContentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        // Obtendo UID do usuário logado
+        val uid = FirebaseAuth.getInstance().currentUser!!.uid
+        if (uid != null) {
+            carregarMinhaLista(uid = uid.toString())
+        } else {
+            Log.w("MyListActivity", "UID do usuário não encontrado")
+        }
+    }
+
+    private fun initializeDetailContentLauncher() {
+        detailContentLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
             // Este callback é chamado quando DetailContentActivity finaliza
             if (result.resultCode == RESULT_OK) {
                 // Algo mudou e DetailContentActivity está retornando um resultado positivo
                 val data = result.data
                 val itemWasRemoved = data?.getBooleanExtra("ITEM_REMOVED", false) ?: false
-                val itemWasAdded = data?.getBooleanExtra("ITEM_ADDED", false) ?: false // Se você também tiver adição
+                val itemWasAdded = data?.getBooleanExtra("ITEM_ADDED", false) ?: false
                 val modifiedItemId = data?.getStringExtra("MODIFIED_ITEM_ID")
 
                 if (itemWasRemoved && modifiedItemId != null) {
@@ -89,18 +106,14 @@ class MyListActivity : AppCompatActivity() {
                 Log.d("MyListActivity", "DetailContentActivity retornou RESULT_CANCELED")
             }
         }
-
-        // Obtendo UID do usuário logado
-        val uid = FirebaseAuth.getInstance().currentUser!!.uid
-        if (uid != null) {
-            carregarMinhaLista(uid = uid.toString())
-        } else {
-            Log.w("MyListActivity", "UID do usuário não encontrado")
-        }
     }
 
     private fun setupRecyclerView() {
-        itemsAdapter = mylistFullAdapter(contentList, this::onItemClicked)
+        itemsAdapter = mylistFullAdapter(
+            contentList,
+            {item, position -> onItemClicked(item, position)}, // Lambda para o clique
+            {item, position, view -> onItemLongClicked(item, position, view)} // Lambda para o clique longo
+        )
         binding.recyclerView.layoutManager = GridLayoutManager(this, 2)
         binding.recyclerView.adapter = itemsAdapter
         Log.d("MyListActivity", "RecyclerView configurado")
@@ -116,9 +129,100 @@ class MyListActivity : AppCompatActivity() {
         intent.putExtra("content", item.content) // item.content DEVE ser Parcelable
         intent.putExtra("naMinhaLista", true)
         if (item.content?.id != null) { // Passar o ID para DetailActivity é útil
-            intent.putExtra("CONTENT_ID", item.content?.id)
+            intent.putExtra("CONTENT_ID", item.content.id)
         }
         detailContentLauncher.launch(intent) // <<== Inicie a activity usando o launcher
+    }
+
+    private fun onItemLongClicked(item: contentUser, position: Int, view: View): Boolean {
+        longClickedItemData = item
+        longClickedItemPositionAdapter = position
+        view.showContextMenu()
+        return true
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        menuInflater.inflate(R.menu.item_options, menu)
+
+        val currentItem = longClickedItemData
+        val title = currentItem?.content?.titulo?.get(Locale.getDefault().language)
+            ?: currentItem?.content?.titulo?.get("en")
+            ?: "Ações do Item"
+        menu?.setHeaderTitle(title)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val currentItem = longClickedItemData
+        val currentPosition = longClickedItemPositionAdapter
+
+        if (currentItem == null || currentPosition == -1) {
+            Log.w("MyListActivity", "Tentativa de uso de menu de contexto sem dados válidos")
+            return super.onContextItemSelected(item)
+        }
+
+        return when (item.itemId) {
+            R.id.action_change_status_mylist_item -> {
+                Toast.makeText(this, "Mudar status: ${currentItem.content?.titulo?.get("pt")}", Toast.LENGTH_SHORT).show()
+                // Adicione sua lógica para mudar status aqui
+                true
+            }
+            R.id.action_delete_mylist_item_context -> {
+                val itemIdToRemove = currentItem.content?.id
+                if (itemIdToRemove != null) {
+                    removerItemDaListaComConfirmacao(itemIdToRemove, currentPosition, currentItem) // Exemplo com confirmação
+                } else {
+                    Toast.makeText(this, "ID do item não encontrado para remoção.", Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
+            else -> super.onContextItemSelected(item)
+        }
+    }
+
+    // Função de exemplo para remover, pode ser uma que você já tem ou uma nova
+    private fun removerItemDaListaComConfirmacao(itemId: String, positionInAdapter: Int, itemParaRemover: contentUser) {
+        // Opcional: Mostrar um diálogo de confirmação antes de remover
+         AlertDialog.Builder(this)
+        .setTitle("Confirmar Remoção")
+        .setMessage("Tem certeza que deseja remover '${itemParaRemover.content?.titulo?.get("pt")}' da sua lista?")
+        .setPositiveButton("Remover") { dialog, _ ->
+        // Lógica de remoção real aqui
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(this, "Usuário não logado.", Toast.LENGTH_SHORT).show(); return@setPositiveButton
+        }
+        db.collection("users").document(user.uid).collection("mylist").document(itemId)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("MyListActivity", "Item $itemId removido do Firestore (menu).")
+                Toast.makeText(this, "'${itemParaRemover.content?.titulo?.get("pt")}' removido.", Toast.LENGTH_SHORT).show()
+
+                // Atualizar a lista local e o adapter
+                if (positionInAdapter >= 0 && positionInAdapter < contentList.size) {
+                    // Verificar se o item na posição ainda é o mesmo (segurança extra)
+                    if (contentList[positionInAdapter].content?.id == itemId) {
+                        contentList.removeAt(positionInAdapter)
+                        itemsAdapter.notifyItemRemoved(positionInAdapter)
+                        // Se as posições dos itens subsequentes são importantes, notifique a mudança de range:
+                        // itemsAdapter.notifyItemRangeChanged(positionInAdapter, contentList.size - positionInAdapter)
+                        updateEmptyViewVisibility() // Atualiza se a lista ficou vazia
+                    } else {
+                        // Inconsistência, melhor recarregar
+                        carregarMinhaLista(user.uid)
+                    }
+                } else {
+                    // Posição inválida, recarregar
+                    carregarMinhaLista(user.uid)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("MyListActivity", "Erro ao remover $itemId do Firestore (menu)", e)
+                Toast.makeText(this, "Erro ao remover.", Toast.LENGTH_SHORT).show()
+            }
+         }
+        .setNegativeButton("Cancelar", null)
+        .show()
     }
 
     // Carregando dados da Main Activity da sessão Minha Lista
@@ -228,20 +332,31 @@ class MyListActivity : AppCompatActivity() {
         Log.d("MyListActivity", "Listener de Minha Lista configurado para: $uid")
     }
 
-    private fun updateAdapterWithData(newData: List<contentUser>) {
+    private fun updateAdapterWithData(newList: List<contentUser>) {
         contentList.clear()
-        contentList.addAll(newData)
-        itemsAdapter.notifyDataSetChanged()
+        contentList.addAll(newList)
+
+        // Chama o método updateData DO ADAPTER
+        if (::itemsAdapter.isInitialized) {
+            itemsAdapter.updateData(newList)
+        } else {
+            Log.w("MyListActivity", "itemsAdapter não foi inicializada")
+        }
         Log.d("MyListActivity", "Dados da Minha Lista atualizados com ${contentList.size} itens")
-        // Verificar se a lista está vazia e exibir a mensagem apropriada
-//        if (contentList.isEmpty()) {
-//            binding.recyclerView.visibility = RecyclerView.GONE
-//            binding.emptyView.visibility = RecyclerView.VISIBLE
-//        } else {
-//            binding.recyclerView.visibility = RecyclerView.VISIBLE
-//            binding.emptyView.visibility = RecyclerView.GONE
-//        }
+
+        updateEmptyViewVisibility()
     }
+
+    private fun updateEmptyViewVisibility() {
+         if (contentList.isEmpty()) {
+             binding.emptyListMessage.visibility = View.VISIBLE
+             binding.recyclerView.visibility = View.GONE
+         } else {
+             binding.emptyListMessage.visibility = View.GONE
+             binding.recyclerView.visibility = View.VISIBLE
+         }
+    }
+
 
     override fun onStop() {
         super.onStop()

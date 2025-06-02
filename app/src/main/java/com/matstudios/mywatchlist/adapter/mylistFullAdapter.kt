@@ -1,6 +1,7 @@
 package com.matstudios.mywatchlist.adapter
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,11 @@ import com.matstudios.mywatchlist.DetailContentActivity
 import com.matstudios.mywatchlist.R
 import java.util.Locale
 
-class mylistFullAdapter (private var contentList: List<contentUser>, private val onItemClicked: (item: contentUser, position: Int) -> Unit): RecyclerView.Adapter<mylistFullAdapter.ViewHolder>(){
+class mylistFullAdapter (
+    private var contentList: MutableList<contentUser>,
+    private val onItemClicked: (item: contentUser, position: Int) -> Unit, //Lambda para o clique
+    private val onItemLongClicked: (item: contentUser, position: Int, view: View) -> Boolean //Lambda para o clique longo
+): RecyclerView.Adapter<mylistFullAdapter.ViewHolder>(){
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val capa = view.findViewById<ImageView>(R.id.capa)
@@ -38,18 +43,20 @@ class mylistFullAdapter (private var contentList: List<contentUser>, private val
         holder.avaliaPessoal.text = item.minhaNota
         holder.status.text = item.status
         holder.progresso.text = item.progresso
+
         holder.itemView.setOnClickListener {
             onItemClicked(item, position) // Chama a função lambda passada pela Activity
-//            val context = holder.itemView.context
-//            val intent = Intent(holder.itemView.context, DetailContentActivity::class.java)
-//            intent.putExtra("content", item.content)
-//            intent.putExtra("naMinhaLista", true)
-//            context.startActivity(intent)
+        }
+        holder.itemView.setOnLongClickListener { view ->
+            onItemLongClicked(item, position, view) // Chama a função lambda passada pela Activity
+            true // Retorna true para indicar que o clique longo foi tratado
         }
     }
 
     fun updateData(newList: List<contentUser>) {
-        contentList = newList
+        Log.d("MyListActivity", "Atualizando dados do adapter com ${newList.size} itens")
+        contentList.clear()
+        contentList.addAll(newList)
         notifyDataSetChanged() // Ou usar DiffUtil para melhor performance
     }
 }

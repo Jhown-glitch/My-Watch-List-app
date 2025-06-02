@@ -98,6 +98,18 @@
                 tools:itemCount="20"
                 tools:listitem="@layout/mylist_recycler"/>
 
+            <TextView
+                android:id="@+id/emptyListMessage"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="Sua Lista está vazia :/ Tente adicionar algo para aparecer aqui"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_margin="200dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/recyclerView" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
