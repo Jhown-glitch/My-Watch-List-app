@@ -164,7 +164,13 @@ class MyListActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_change_status_mylist_item -> {
                 Toast.makeText(this, "Mudar status: ${currentItem.content?.titulo?.get("pt")}", Toast.LENGTH_SHORT).show()
-                // Adicione sua lógica para mudar status aqui
+                val statusOption = arrayOf("Não Assistido", "Assistindo", "Concluído")
+                AlertDialog.Builder(this).setTitle("Mudar Status").setItems(statusOption) { _, which ->
+                    val newStatus = statusOption[which]
+                    alterarStatusDoItem(currentItem, longClickedItemPositionAdapter, newStatus)
+                }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
                 true
             }
             R.id.action_delete_mylist_item_context -> {
@@ -180,7 +186,44 @@ class MyListActivity : AppCompatActivity() {
         }
     }
 
-    // Função de exemplo para remover, pode ser uma que você já tem ou uma nova
+    // Função para alterar status
+    private fun alterarStatusDoItem(itemParaAlterar: contentUser, positionInAdapter: Int, newStatus: String) {
+        // Lógica para alterar o status do item
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            Toast.makeText(this, "Usuário não logado.", Toast.LENGTH_SHORT).show();
+            return
+        }
+
+        val itemID = itemParaAlterar.content?.id
+        if (itemID == null) {
+            Toast.makeText(this, "ID do item não encontrado para alteração de status.", Toast.LENGTH_SHORT).show();
+            return
+        }
+
+        // Atualização do Firestore
+        db.collection("users").document(user.uid).collection("mylist").document(itemID)
+            .update("status", newStatus)
+            .addOnSuccessListener {
+                Log.d("MyListActivity", "Status do item $itemID alterado para $newStatus")
+                Toast.makeText(this, "Status de $itemID alterado com sucesso para $newStatus.", Toast.LENGTH_SHORT).show()
+
+                if (positionInAdapter in contentList.indices) {
+                    // Atualizar o item na lista local
+                    contentList[positionInAdapter].status = newStatus
+                    itemsAdapter.notifyItemChanged(positionInAdapter)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("MyListActivity", "Erro ao alterar status do item $itemID", e)
+                Toast.makeText(this, "Erro ao alterar status.", Toast.LENGTH_SHORT).show()
+            }
+        // Atualizar a lista local e o adapter
+        itemParaAlterar.status = newStatus
+        itemsAdapter.notifyItemChanged(positionInAdapter)
+    }
+
+    // Função para remover
     private fun removerItemDaListaComConfirmacao(itemId: String, positionInAdapter: Int, itemParaRemover: contentUser) {
         // Opcional: Mostrar um diálogo de confirmação antes de remover
          AlertDialog.Builder(this)

@@ -1,5 +1,6 @@
 package com.matstudios.mywatchlist.adapter
 
+import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -51,6 +52,8 @@ class mylistFullAdapter (
             onItemLongClicked(item, position, view) // Chama a função lambda passada pela Activity
             true // Retorna true para indicar que o clique longo foi tratado
         }
+
+        (holder.itemView.context as? Activity)?. registerForContextMenu (holder.itemView)
     }
 
     fun updateData(newList: List<contentUser>) {
