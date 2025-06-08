@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         //Mensagem e Verificação de Usuário
         val user = FirebaseAuth.getInstance().currentUser
-        val uid = FirebaseAuth.getInstance().currentUser!!?.uid
+        //val uid = FirebaseAuth.getInstance().currentUser!!?.uid
 
         val nomeUsuario = when {
             user == null -> "Usuário"

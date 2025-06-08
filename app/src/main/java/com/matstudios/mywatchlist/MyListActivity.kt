@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -78,6 +79,44 @@ class MyListActivity : AppCompatActivity() {
         filterButton.setOnClickListener { view ->
             showFilterMenu(view)
         }
+
+        val searchView = binding.searchView
+        val nomeTela = binding.textView2
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                aplicarBuscaPorTitulo(newText ?: "")
+                return true
+            }
+        })
+        searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            nomeTela.visibility = if (hasFocus) View.GONE else View.VISIBLE
+        }
+
+    }
+
+    private fun aplicarBuscaPorTitulo(termo: String) {
+        if (termo.isBlank()) {
+            aplicarFiltroNaLista()
+            return
+        }
+
+        val termoLower = termo.lowercase()
+        val listaBuscada = listaOriginal.filter {
+            val titulo = it.content?.titulo?.get("pt") ?: it.content?.titulo?.get("en") ?: ""
+            titulo.lowercase().contains(termoLower)
+        }
+        if (listaBuscada.isEmpty()) {
+            binding.emptyListMessage.visibility = View.VISIBLE
+        } else {
+            binding.emptyListMessage.visibility = View.GONE
+            itemsAdapter.updateData(listaBuscada)
+        }
+
+        updateAdapterWithData(listaBuscada.toMutableList())
     }
 
     private fun showFilterMenu(view: View) {
