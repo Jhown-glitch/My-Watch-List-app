@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/filter_all"
+        android:title="Todos" />
+    <item
+        android:id="@+id/filter_naoAssistido"
+        android:title="Não assistido" />
+    <item
+        android:id="@+id/filter_assistindo"
+        android:title="Assistindo" />
+    <item
+        android:id="@+id/filter_concluido"
+        android:title="Concluído" />
+    <item
+        android:id="@+id/filter_alfabeto"
+        android:title="A-Z" />
+    <item
+        android:id="@+id/filter_alfaInvertido"
+        android:title="Z-A" />
+    <item
+        android:id="@+id/filter_type"
+        android:title="Tipo" />
+    <item
+        android:id="@+id/filter_nota"
+        android:title="Nota" />
+</menu>

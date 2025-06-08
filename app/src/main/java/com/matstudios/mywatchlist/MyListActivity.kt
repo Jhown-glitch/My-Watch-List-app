@@ -26,6 +26,9 @@ import com.matstudios.mywatchlist.adapter.contentUser
 import com.matstudios.mywatchlist.adapter.mylistFullAdapter
 import com.matstudios.mywatchlist.databinding.ActivityMyListBinding
 import java.util.Locale
+import kotlin.text.equals
+import kotlin.text.filter
+import kotlin.text.toMutableList
 
 class MyListActivity : AppCompatActivity() {
 
@@ -42,6 +45,10 @@ class MyListActivity : AppCompatActivity() {
     // Variáveis para o item do clique longo
     private var longClickedItemData: contentUser? = null
     private var longClickedItemPositionAdapter: Int = -1
+    // Guarda a lista original sem filtros
+    private var listaOriginal: MutableList<contentUser> = mutableListOf()
+    // Rastreia o filtro atual, 'all' por padrão
+    private var filtroAtual: String = "all"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +73,119 @@ class MyListActivity : AppCompatActivity() {
         } else {
             Log.w("MyListActivity", "UID do usuário não encontrado")
         }
+
+        val filterButton = binding.filterButton
+        filterButton.setOnClickListener { view ->
+            showFilterMenu(view)
+        }
+    }
+
+    private fun showFilterMenu(view: View) {
+        val popupMenu = android.widget.PopupMenu(this, view)
+        popupMenu.menuInflater.inflate(R.menu.filter_options, popupMenu.menu)
+        when (filtroAtual) {
+            "naoAssistido" -> popupMenu.menu.findItem(R.id.filter_naoAssistido).isChecked = true
+            "assistindo" -> popupMenu.menu.findItem(R.id.filter_assistindo).isChecked = true
+            "concluido" -> popupMenu.menu.findItem(R.id.filter_concluido).isChecked = true
+            "alfabeto" -> popupMenu.menu.findItem(R.id.filter_alfabeto).isChecked = true
+            "alfaInvertido" -> popupMenu.menu.findItem(R.id.filter_alfaInvertido).isChecked = true
+            "type" -> popupMenu.menu.findItem(R.id.filter_type).isChecked = true
+            "nota" -> popupMenu.menu.findItem(R.id.filter_nota).isChecked = true
+            else -> popupMenu.menu.findItem(R.id.filter_all).isChecked = true
+        }
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.filter_all -> {
+                    filtroAtual = "all"
+                    aplicarFiltroNaLista()
+                    true
+                }
+                R.id.filter_naoAssistido -> {
+                    filtroAtual = "naoAssistido"
+                    aplicarFiltroNaLista()
+                    true
+                }
+                R.id.filter_assistindo -> {
+                    filtroAtual = "assistindo"
+                    aplicarFiltroNaLista()
+                    true
+                }
+                R.id.filter_concluido -> {
+                    filtroAtual = "concluido"
+                    aplicarFiltroNaLista()
+                    true
+                }
+                R.id.filter_alfabeto -> {
+                    filtroAtual = "alfabeto"
+                    aplicarFiltroNaLista()
+                    true
+                }
+                R.id.filter_alfaInvertido -> {
+                    filtroAtual = "alfaInvertido"
+                    aplicarFiltroNaLista()
+                    true
+                }
+                R.id.filter_type -> {
+                    filtroAtual = "type"
+                    aplicarFiltroNaLista()
+                    true
+                }
+                R.id.filter_nota -> {
+                    filtroAtual = "nota"
+                    aplicarFiltroNaLista()
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
+    }
+
+    private fun aplicarFiltroNaLista() {
+        Log.d("MyListActivity", "Aplicando filtro: $filtroAtual")
+        val listaFiltrada: List<contentUser> = when (filtroAtual) {
+            "naoAssistido" -> listaOriginal.filter {
+                it.status.equals("Não Assistido", ignoreCase = true)
+            }
+            "assistindo" -> listaOriginal.filter {
+                it.status.equals("Assistindo", ignoreCase = true)
+            }
+            "concluido" -> listaOriginal.filter {
+                it.status.equals("Concluído", ignoreCase = true)
+            }
+            "alfabeto" -> listaOriginal.sortedBy {
+                it.content?.titulo?.get("pt")?.lowercase() ?: ""
+            }
+            "alfaInvertido" -> listaOriginal.sortedByDescending {
+                it.content?.titulo?.get("pt")?.lowercase() ?: ""
+            }
+            "type" -> listaOriginal.sortedBy {
+                it.content?.tipo?.get("pt")?.lowercase() ?: ""
+            }
+            "nota" -> listaOriginal.sortedByDescending {
+                it.minhaNota.toDoubleOrNull() ?: 0.0
+            }
+            else -> listaOriginal // "all" ou qualquer outro
+        }
+
+//        val statusAlvo = when (filtroAtual) {
+//            "naoAssistido" -> "Não Assistido"
+//            "assistindo" -> "Assistindo"
+//            "concluido" -> "Concluído"
+//            else -> null
+//        }
+//        if (statusAlvo != null) {
+//            Log.d("MyListActivity", "Aplicando filtro: $filtroAtual")
+//        }
+//        val listaFiltrada = if (filtroAtual == "ALL") {
+//            ArrayList(listaOriginal) // Cria uma cópia da lista original
+//        } else {
+//            listaOriginal.filter { it.status.equals(filtroAtual, ignoreCase = true) }
+//                .toMutableList()
+//        }
+        // Atualiza a lista que o adapter está usando e notifica
+        updateAdapterWithData(listaFiltrada.toMutableList())
     }
 
     private fun initializeDetailContentLauncher() {
@@ -277,12 +397,14 @@ class MyListActivity : AppCompatActivity() {
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     Log.w("MyListActivity", "Erro ao carregar Minha Lista", error)
+                    listaOriginal.clear()
                     updateAdapterWithData(emptyList())
                     return@addSnapshotListener
                 }
 
                 if (snapshot == null || snapshot.isEmpty) {
                     Log.d("MyListActivity", "Lista do usuário vazia ou snapshot nulo")
+                    listaOriginal.clear()
                     updateAdapterWithData(emptyList())
                     return@addSnapshotListener
                 }
@@ -296,13 +418,13 @@ class MyListActivity : AppCompatActivity() {
                 var refsCarregadas = 0
 
                 if (totalRefs == 0) {
+                    listaOriginal.clear()
                     updateAdapterWithData(emptyList())
                     return@addSnapshotListener
                 }
 
                 snapshot.documents.forEach { document ->
                     val contentRef = document.getDocumentReference("ref")
-
                     // Pegar os dados específicos do usuário DESTE documento da subcoleção 'mylist'
                     val notaUsuario = document.getString("minhaNota") ?: ""
                     val progressoUsuario = document.getString("progresso") ?: ""
@@ -323,65 +445,77 @@ class MyListActivity : AppCompatActivity() {
                             updateAdapterWithData(tempList)
                         }
                         return@forEach
-                    }
-                    contentRef.get().addOnSuccessListener { contentDoc ->
-                        val contentPrincipal: content?
+                    } else {
+                        contentRef.get().addOnSuccessListener { contentDoc ->
+                            val contentPrincipal: content?
 
-                        if (contentDoc.exists()) {
-                            // Converter o documento referenciado para a classe 'content'
-                            contentPrincipal = contentDoc.toObject(content::class.java)
-                            if (contentPrincipal == null) {
-                                Log.w("MyListActivity", "Falha ao converter doc ${contentDoc.id} para content.class.java")
+                            if (contentDoc.exists()) {
+                                // Converter o documento referenciado para a classe 'content'
+                                contentPrincipal = contentDoc.toObject(content::class.java)
+                                if (contentPrincipal == null) {
+                                    Log.w("MyListActivity", "Falha ao converter doc ${contentDoc.id} para content.class.java")
+                                }
+                            } else {
+                                Log.w("MyListActivity", "Documento de conteúdo ${contentRef.path} não existe")
+                                contentPrincipal = null
                             }
-                        } else {
-                            Log.w("MyListActivity", "Documento de conteúdo ${contentRef.path} não existe")
-                            contentPrincipal = null
-                        }
 
-                        // Criar o objeto contentUser combinando os dados
-                        val itemUsuario = contentUser(
-                            content = contentPrincipal, // objetoContentPrincipal pode ser null aqui
-                            minhaNota = notaUsuario,
-                            progresso = progressoUsuario,
-                            status = statusUsuario
-                        )
-                        tempList.add(itemUsuario)
-                        refsCarregadas++
-                        if (refsCarregadas == totalRefs) {
-                            updateAdapterWithData(tempList)
-                        }
-                    }.addOnFailureListener { exception ->
-                        Log.e(
-                            "MyListActivity",
-                            "Erro ao carregar conteúdo (listener) ${contentRef.path}",
-                            exception
-                        )
-                        // Em caso de falha ao buscar o conteúdo, ainda adicionamos o item
-                        // com os dados do usuário e 'content' como null.
-                        val itemUsuario = contentUser(
-                            content = null,
-                            minhaNota = notaUsuario,
-                            progresso = progressoUsuario,
-                            status = statusUsuario
-                        )
-                        tempList.add(itemUsuario)
-                        refsCarregadas++
-                        if (refsCarregadas == totalRefs) {
-                            updateAdapterWithData(tempList)
+                            // Criar o objeto contentUser combinando os dados
+                            val itemUsuario = contentUser(
+                                content = contentPrincipal, // objetoContentPrincipal pode ser null aqui
+                                minhaNota = notaUsuario,
+                                progresso = progressoUsuario,
+                                status = statusUsuario
+                            )
+                            tempList.add(itemUsuario)
+                            refsCarregadas++
+                            if (refsCarregadas == totalRefs) {
+                                Log.d("MyListActivity", "Todas as refs carregadas (${refsCarregadas}/${totalRefs}). Atualizando listaOriginal.")
+                                listaOriginal.clear()
+                                listaOriginal.addAll(tempList)
+
+                                aplicarFiltroNaLista()
+                                updateAdapterWithData(tempList)
+                            }
+                        }.addOnFailureListener { exception ->
+                            Log.e(
+                                "MyListActivity",
+                                "Erro ao carregar conteúdo (listener) ${contentRef.path}",
+                                exception
+                            )
+                            // Em caso de falha ao buscar o conteúdo, ainda adicionamos o item
+                            // com os dados do usuário e 'content' como null.
+                            val itemUsuario = contentUser(
+                                content = null,
+                                minhaNota = notaUsuario,
+                                progresso = progressoUsuario,
+                                status = statusUsuario
+                            )
+                            tempList.add(itemUsuario)
+                            refsCarregadas++
+                            if (refsCarregadas == totalRefs) {
+                                Log.d("MyListActivity", "Todas as refs carregadas com falhas (${refsCarregadas}/${totalRefs}). Atualizando listaOriginal.")
+                                listaOriginal.clear()
+                                listaOriginal.addAll(tempList)
+                                updateAdapterWithData(tempList)
+                            }
                         }
                     }
+
                 }
+
             }
         Log.d("MyListActivity", "Listener de Minha Lista configurado para: $uid")
     }
 
     private fun updateAdapterWithData(newList: List<contentUser>) {
+        Log.d("MyListActivity", "Atualizando adapter com ${newList.size} itens (após filtro: $filtroAtual).")
         contentList.clear()
         contentList.addAll(newList)
 
         // Chama o método updateData DO ADAPTER
         if (::itemsAdapter.isInitialized) {
-            itemsAdapter.updateData(newList)
+            itemsAdapter.updateData(ArrayList(contentList))
         } else {
             Log.w("MyListActivity", "itemsAdapter não foi inicializada")
         }
