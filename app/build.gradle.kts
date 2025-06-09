@@ -63,6 +63,9 @@ dependencies {
     implementation (libs.wasabeef.glide.transformations)
     //ksp(libs.glide.compiler)
 
+    //Gson
+    implementation(libs.gson)
+
     // Import the Firebase BoM
     implementation(platform(libs.firebase.bom))
     // When using the BoM, don't specify versions in Firebase dependencies

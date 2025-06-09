@@ -63,6 +63,13 @@ class MainActivity : AppCompatActivity() {
         binding.mylistSection.adapter = mylistAdapter
         Log.d("MainActivity", "Seção Minha Lista configurada no onCreate.")
 
+        // Clique para pesquisar
+        binding.buttonSearchScreen.setOnClickListener {
+            // Lógica para abrir a tela de Pesquisa
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
+        }
+
         // Clique no Ver Tudo Minha Lista
         binding.verTudoML.setOnClickListener {
             // Lógica para abrir a tela de Minha Lista completa

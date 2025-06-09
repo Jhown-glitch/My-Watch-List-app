@@ -29,3 +29,15 @@ package com.matstudios.mywatchlist.adapter
         val titulo: Map<String, String> = mapOf(),
         val trailer: String = ""
     ) : Parcelable
+
+// Wrapper para o adapter
+//sealed class SearchListItem {
+//    data class SearchResultItem(val item: content) : SearchListItem()
+//    data class HistoryItem(val item: content, val query: String) : SearchListItem()
+//}
+
+//sealed class SearchListItem {
+//    data class SearchResultItem(val content: content) : SearchListItem()
+//    data class HistoryItem(val query: String, val content: content, val timestamp: Long) : SearchListItem()
+//    object LoadingItem : SearchListItem()
+//}
