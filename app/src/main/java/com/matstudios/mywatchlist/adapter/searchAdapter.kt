@@ -1,5 +1,6 @@
 package com.matstudios.mywatchlist.adapter
 
+import android.content.Context
 import android.app.appsearch.SearchResult
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +18,7 @@ sealed class SearchListItem {
 }
 
 class searchAdapter (
-    private val context: content,
+    private val context: Context,
     private var items: MutableList<SearchListItem> = mutableListOf(),
     private val onSearchResultClickListener: (content) -> Unit,
     private val onHistoryItemClickListener: (content) -> Unit,
@@ -117,9 +118,5 @@ class searchAdapter (
             itemView.setOnClickListener { clickListener(item) }
             removeButton.setOnClickListener { removeClickListener(item) }
         }
-    }
-
-    fun notifyDataSetChanged() {
-        TODO("Not yet implemented")
     }
 }

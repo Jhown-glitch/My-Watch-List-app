@@ -12,7 +12,7 @@ class SearchHistoryManager(context: Context) {
     private val HISTORY_KEY = "search_history"
     private val MAX_HISTORY_SIZE = 20
 
-    fun getSearchHistory(): List<String> {
+    fun getSearchHistory(): List<content> {
         val json = prefs.getString(HISTORY_KEY, null)
         return if (json != null) {
             val type = object : TypeToken<List<content>>() {}.type

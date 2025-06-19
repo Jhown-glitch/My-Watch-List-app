@@ -296,54 +296,108 @@ class MyListActivity : AppCompatActivity() {
     private fun onItemLongClicked(item: contentUser, position: Int, view: View): Boolean {
         longClickedItemData = item
         longClickedItemPositionAdapter = position
-        view.showContextMenu()
+        //view.showContextMenu()
+        showCustomPopUpMenuForMyListItem(item, view)
         return true
     }
 
-    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
-        super.onCreateContextMenu(menu, v, menuInfo)
-        menuInflater.inflate(R.menu.item_options, menu)
+    private fun showCustomPopUpMenuForMyListItem(item: contentUser, view: View) {
+        val popupMenu = android.widget.PopupMenu(this, view)
+        popupMenu.menuInflater.inflate(R.menu.item_options, popupMenu.menu)
 
-        val currentItem = longClickedItemData
-        val title = currentItem?.content?.titulo?.get(Locale.getDefault().language)
-            ?: currentItem?.content?.titulo?.get("en")
-            ?: "Ações do Item"
-        menu?.setHeaderTitle(title)
+        // Encontra os itens do menu
+        val addItemAction = popupMenu.menu.findItem(R.id.action_add_to_mylist_item_context)
+        val removeItemAction = popupMenu.menu.findItem(R.id.action_delete_mylist_item_context)
+        val changeStatusAction = popupMenu.menu.findItem(R.id.action_change_status_mylist_item)
+
+        // Configura visibilidade dos itens
+        addItemAction.isVisible = false
+        removeItemAction.isVisible = true
+        changeStatusAction.isVisible = true
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            val currentItem = longClickedItemData
+            val currentPosition = longClickedItemPositionAdapter
+
+            if (currentItem == null || currentPosition == -1) {
+                Log.w("MyListActivity", "Tentativa de uso de menu de contexto sem dados válidos")
+                return@setOnMenuItemClickListener false
+            }
+
+            when (menuItem.itemId) {
+                R.id.action_delete_mylist_item_context -> {
+                    // Lógica para remover item
+                    val itemIdToRemove = currentItem.content?.id
+                    if (itemIdToRemove != null) {
+                        removerItemDaListaComConfirmacao(itemIdToRemove, currentPosition, currentItem)
+                    } else {
+                        Toast.makeText(this, "ID do item não encontrado para remoção.", Toast.LENGTH_SHORT).show()
+                    }
+                    true
+            }
+                R.id.action_change_status_mylist_item -> {
+                    // Lógica para mudar o status
+                    val statusOption = arrayOf("Não Assistido", "Assistindo", "Concluído")
+                    AlertDialog.Builder(this)
+                        .setTitle("Mudar Status de ${currentItem.content?.titulo?.get(Locale.getDefault().language)}")
+                        .setItems(statusOption) { _, which ->
+                            val newStatus = statusOption[which]
+                            alterarStatusDoItem(currentItem, longClickedItemPositionAdapter, newStatus)
+                        }
+                        .setNegativeButton("Cancelar", null)
+                        .show()
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        val currentItem = longClickedItemData
-        val currentPosition = longClickedItemPositionAdapter
-
-        if (currentItem == null || currentPosition == -1) {
-            Log.w("MyListActivity", "Tentativa de uso de menu de contexto sem dados válidos")
-            return super.onContextItemSelected(item)
-        }
-
-        return when (item.itemId) {
-            R.id.action_change_status_mylist_item -> {
-                Toast.makeText(this, "Mudar status: ${currentItem.content?.titulo?.get("pt")}", Toast.LENGTH_SHORT).show()
-                val statusOption = arrayOf("Não Assistido", "Assistindo", "Concluído")
-                AlertDialog.Builder(this).setTitle("Mudar Status").setItems(statusOption) { _, which ->
-                    val newStatus = statusOption[which]
-                    alterarStatusDoItem(currentItem, longClickedItemPositionAdapter, newStatus)
-                }
-                    .setNegativeButton("Cancelar", null)
-                    .show()
-                true
-            }
-            R.id.action_delete_mylist_item_context -> {
-                val itemIdToRemove = currentItem.content?.id
-                if (itemIdToRemove != null) {
-                    removerItemDaListaComConfirmacao(itemIdToRemove, currentPosition, currentItem) // Exemplo com confirmação
-                } else {
-                    Toast.makeText(this, "ID do item não encontrado para remoção.", Toast.LENGTH_SHORT).show()
-                }
-                true
-            }
-            else -> super.onContextItemSelected(item)
-        }
-    }
+//    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+//        super.onCreateContextMenu(menu, v, menuInfo)
+//        menuInflater.inflate(R.menu.item_options, menu)
+//
+//        val currentItem = longClickedItemData
+//        val title = currentItem?.content?.titulo?.get(Locale.getDefault().language)
+//            ?: currentItem?.content?.titulo?.get("en")
+//            ?: "Ações do Item"
+//        menu?.setHeaderTitle(title)
+//    }
+//
+//    override fun onContextItemSelected(item: MenuItem): Boolean {
+//        val currentItem = longClickedItemData
+//        val currentPosition = longClickedItemPositionAdapter
+//
+//        if (currentItem == null || currentPosition == -1) {
+//            Log.w("MyListActivity", "Tentativa de uso de menu de contexto sem dados válidos")
+//            return super.onContextItemSelected(item)
+//        }
+//
+//        return when (item.itemId) {
+//            R.id.action_change_status_mylist_item -> {
+//                Toast.makeText(this, "Mudar status: ${currentItem.content?.titulo?.get("pt")}", Toast.LENGTH_SHORT).show()
+//                val statusOption = arrayOf("Não Assistido", "Assistindo", "Concluído")
+//                AlertDialog.Builder(this).setTitle("Mudar Status").setItems(statusOption) { _, which ->
+//                    val newStatus = statusOption[which]
+//                    alterarStatusDoItem(currentItem, longClickedItemPositionAdapter, newStatus)
+//                }
+//                    .setNegativeButton("Cancelar", null)
+//                    .show()
+//                true
+//            }
+//            R.id.action_delete_mylist_item_context -> {
+//                val itemIdToRemove = currentItem.content?.id
+//                if (itemIdToRemove != null) {
+//                    removerItemDaListaComConfirmacao(itemIdToRemove, currentPosition, currentItem) // Exemplo com confirmação
+//                } else {
+//                    Toast.makeText(this, "ID do item não encontrado para remoção.", Toast.LENGTH_SHORT).show()
+//                }
+//                true
+//            }
+//            else -> super.onContextItemSelected(item)
+//        }
+//    }
 
     // Função para alterar status
     private fun alterarStatusDoItem(itemParaAlterar: contentUser, positionInAdapter: Int, newStatus: String) {

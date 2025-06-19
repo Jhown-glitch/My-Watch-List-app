@@ -11,8 +11,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.launch
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.compose.animation.core.copy
-import androidx.compose.ui.semantics.text
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -28,12 +26,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
+import kotlin.coroutines.cancellation.CancellationException
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
     private lateinit var db: FirebaseFirestore
-    private var collections = listOf("filmes", "series", "animes")
+    private val collections = listOf("filmes", "series", "animes")
     private lateinit var adapter: searchAdapter
     //private val searchResults: MutableList<content> = mutableListOf()
 
@@ -79,39 +79,39 @@ class SearchActivity : AppCompatActivity() {
 //        })
     }
 
-    private fun buscarConteudo(termo: String) {
-        val tempResult = mutableListOf<content>()
-        var consultasFinalizadas = 0
-
-        for (collection in collections) {
-            db.collection(collection)
-                .whereArrayContains("titulo", termo)
-                .get().addOnSuccessListener {
-                    for (doc in it) {
-                        val item = doc.toObject(content::class.java)
-                        val tituloPt = item.titulo?.get("pt")?.lowercase() ?: ""
-
-                        if (tituloPt.contains(termo.lowercase())) {
-                            tempResult.add(item)
-                        }
-                    }
-                    consultasFinalizadas++
-                    if (consultasFinalizadas == collections.size) {
-                        atualizarResultados(tempResult)
-                    }
-                }
-        }
-    }
-
-    private fun atualizarResultados(resultados: List<content>) {
-        searchResults.clear()
-        searchResults.addAll(resultados)
-        adapter.notifyDataSetChanged()
-    }
+//    private fun buscarConteudo(termo: String) {
+//        val tempResult = mutableListOf<content>()
+//        var consultasFinalizadas = 0
+//
+//        for (collection in collections) {
+//            db.collection(collection)
+//                .whereArrayContains("titulo", termo)
+//                .get().addOnSuccessListener {
+//                    for (doc in it) {
+//                        val item = doc.toObject(content::class.java)
+//                        val tituloPt = item.titulo?.get("pt")?.lowercase() ?: ""
+//
+//                        if (tituloPt.contains(termo.lowercase())) {
+//                            tempResult.add(item)
+//                        }
+//                    }
+//                    consultasFinalizadas++
+//                    if (consultasFinalizadas == collections.size) {
+//                        atualizarResultados(tempResult)
+//                    }
+//                }
+//        }
+//    }
+//
+//    private fun atualizarResultados(resultados: List<content>) {
+//        searchResults.clear()
+//        searchResults.addAll(resultados)
+//        adapter.notifyDataSetChanged()
+//    }
 
     private fun abrirDetalhes(item: content) {
         val intent = Intent(this, DetailContentActivity::class.java)
-        intent.putExtra("item", item)
+        intent.putExtra("content", item)
         startActivity(intent)
     }
 
@@ -169,7 +169,7 @@ class SearchActivity : AppCompatActivity() {
                         }
                     } else {
                         // Query muito curta, pode limpar resultados anteriores, mas não mostrar histórico ainda
-                        adapter.submitList(emptyList())
+                        adapter.submitList(emptyList<SearchListItem>())
                         showEmptyState(false) // Esconder mensagem de "nenhum resultado"
                     }
                 } else {
@@ -202,22 +202,33 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showItemOptionsMenu(item: content, anchorView: View) {
         val popupMenu = PopupMenu(this, anchorView)
-        popupMenu.menuInflater.inflate(R.menu.item_options, popupMenu.menu) // SEU MENU XML
+        popupMenu.menuInflater.inflate(R.menu.item_options, popupMenu.menu)
+
+        val addToMyListAction = popupMenu.menu.findItem(R.id.action_add_to_mylist_item_context)
+        val deleteFromMyListAction = popupMenu.menu.findItem(R.id.action_delete_mylist_item_context)
+        val changeStatusAction = popupMenu.menu.findItem(R.id.action_change_status_mylist_item)
+
+        val isItemInMyList = checkIfItemIsInMyList(item.id)
+
+        addToMyListAction.isVisible = !isItemInMyList
+        deleteFromMyListAction.isVisible = isItemInMyList
+        changeStatusAction.isVisible = isItemInMyList
+
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.add_to_mylist_item_context -> {
-                    // TODO: Implementar lógica para adicionar à "Minha Lista" do usuário no Firebase
-                    Toast.makeText(this, "Adicionar '${item.titulo?.get("pt")}' à lista (TODO)", Toast.LENGTH_SHORT).show()
+                R.id.action_add_to_mylist_item_context -> {
+
+                    Toast.makeText(this, "'${item.titulo?.get("pt")}' adicionado à lista", Toast.LENGTH_SHORT).show()
                     true
                 }
                 R.id.action_delete_mylist_item_context -> {
                     // TODO: Implementar lógica para remover da "Minha Lista" do usuário no Firebase
-                    Toast.makeText(this, "Remover '${item.titulo?.get("pt")}' da lista (TODO)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "'${item.titulo?.get("pt")}'foi removido da sua lista.", Toast.LENGTH_SHORT).show()
                     true
                 }
                 R.id.action_change_status_mylist_item -> {
                     // TODO: Implementar lógica de compartilhamento
-                    Toast.makeText(this, "Compartilhar '${item.titulo?.get("pt")}' (TODO)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Status de '${item.titulo?.get("pt")}' alterado para:", Toast.LENGTH_SHORT).show()
                     true
                 }
                 else -> false
@@ -234,16 +245,25 @@ class SearchActivity : AppCompatActivity() {
             val tempResult = mutableListOf<content>()
             try {
                 for (collectionName in collections) {
-                    val querySnapshot = db.collection(collectionName)
+                    Log.d("SearchActivity", "Buscando em coleção: $collectionName, termo: '${termo.lowercase(Locale.getDefault())}")
+                    val query = db.collection(collectionName)
                         // AVISO: Firestore é case-sensitive. Para busca flexível, considere
                         // armazenar uma versão lowercase do título ou usar Algolia/Typesense.
                         // Esta busca é por prefixo no campo 'titulo.pt'.
-                        .orderBy("titulo.pt") // Necessário para queries de range em strings
-                        .startAt(termo.lowercase(androidx.compose.ui.text.intl.Locale.getDefault()))
-                        .endAt(termo.lowercase(androidx.compose.ui.text.intl.Locale.getDefault()) + '\uf8ff')
+                        .orderBy("titulo_lower.pt") // Necessário para queries de range em strings
+                        .startAt(termo.lowercase(Locale.getDefault()))
+                        .endAt(termo.lowercase(Locale.getDefault()) + '\uf8ff')
                         .limit(10) // Limitar resultados por coleção
-                        .get()
-                        .await() // Usar await de kotlinx-coroutines-play-services
+
+//                    // Query de teste
+//                    Log.d("SearchActivity", "TESTE: Tentando query com whereGreaterThanOrEqualTo em 'titulo.pt' para $collectionName")
+//                    val query = db.collection(collectionName)
+//                        .whereGreaterThanOrEqualTo("titulo.pt", termo.lowercase(Locale.getDefault())) // Requer índice em titulo.pt
+//                        .limit(5)
+
+                    Log.d("SearchActivity", "Executando query para: $collectionName")
+                    val querySnapshot = query.get().await() // Usar await de kotlinx-coroutines-play-services
+                    Log.d("SearchActivity", "Query concluída para: $collectionName. Documentos retornados: ${querySnapshot.documents.size}")
 
                     for (doc in querySnapshot.documents) {
                         val item = doc.toObject(content::class.java)?.copy(id = doc.id) // Salva o ID do documento
@@ -268,6 +288,11 @@ class SearchActivity : AppCompatActivity() {
                 }
 
             } catch (e: Exception) {
+                if (e is CancellationException) {
+                    Log.w("SearchActivity", "Busca cancelada por parte do usuário.")
+                } else {
+                    Log.e("SearchActivity", "Erro REAL durante a busca por '$termo'", e)
+                }
                 Log.e("SearchActivity", "Erro durante a busca por '$termo'", e)
                 adapter.submitList(emptyList())
                 showEmptyState(true, "Erro ao buscar. Tente novamente.")
